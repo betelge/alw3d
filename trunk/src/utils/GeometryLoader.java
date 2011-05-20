@@ -1,8 +1,6 @@
 package utils;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 
 
+import android.content.Context;
 import betel.alw3d.math.Vector3f;
 import betel.alw3d.renderer.Geometry;
 import betel.alw3d.renderer.Geometry.Attribute;
@@ -20,7 +19,9 @@ import betel.alw3d.renderer.Geometry.Type;
 
 public class GeometryLoader {
 	
-	static public Geometry loadObj(String filename) {
+	static private Context context;
+	
+	static public Geometry loadObj(int resource) {
 
 		ArrayList<Vector3f> v = new ArrayList<Vector3f>();
 		ArrayList<Vector3f> vt = new ArrayList<Vector3f>();
@@ -32,9 +33,9 @@ public class GeometryLoader {
 		ArrayList<Float> vn2 = new ArrayList<Float>();
 
 		try {
-			InputStream is = new FileInputStream(new File(filename));
+			InputStream is = context.getResources().openRawResource(resource);
 			if(is == null)
-				System.out.println("Cant't load geometry: " + filename);
+				System.out.println("Cant't load geometry: " + resource);
 			else {
 				System.out.println("Geometry reads ok");
 			}
@@ -93,7 +94,7 @@ public class GeometryLoader {
 			br.close();
 
 		} catch (IOException e) {
-			System.out.println("Can't read " + filename + ", using a quad instead.");
+			System.out.println("Can't read " + resource + ", using a quad instead.");
 			return Geometry.QUAD;
 		}
 
@@ -152,6 +153,10 @@ public class GeometryLoader {
 		Geometry geometry = new Geometry(indexBuffer, attributes);
 
 		return geometry;
+	}
+	
+	static public void setContext(Context context) {
+		GeometryLoader.context = context;
 	}
 
 }

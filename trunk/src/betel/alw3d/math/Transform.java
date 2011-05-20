@@ -1,5 +1,8 @@
 package betel.alw3d.math;
 
+import android.util.Log;
+import betel.alw3d.Alw3d;
+
 public class Transform {
 	private Vector3f position;
 	private Quaternion rotation;
@@ -82,11 +85,14 @@ public class Transform {
 	}
 
 	public Transform interpolate(Transform transform, float x) {
+		Log.d(Alw3d.LOG_TAG, "Interpolating: " + x + " " + this.hashCode());
+		
 		Vector3f vec = this.position.mult(1 - x)
 				.add(transform.position.mult(x));
-		Vector3f sca = this.scale.mult(1 - x).add(transform.scale.mult(x));
+		Vector3f sca = null;
+		sca = this.scale.mult(1 - x).add(transform.scale.mult(x));
 		Quaternion rot = Quaternion.slerp(this.rotation, transform.rotation, x);
-
+		
 		return new Transform(vec, rot, sca);
 	}
 

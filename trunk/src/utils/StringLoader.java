@@ -1,22 +1,19 @@
 package utils;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
-import betel.ATest.R;
 
 import android.content.Context;
 
 public class StringLoader {
 	
-	static private Object object = new Object(); 
+	static private Context context; 
 	
-	public static String loadStringExceptionless(Context context, int resource) {
+	public static String loadStringExceptionless(int resource) {
 		try {
-			return loadString(context, resource);
+			return loadString(resource);
 		} catch (IOException e) {
 			System.out.println("Can't resource " + resource + ", using empty string instead.");
 			return "NULL";
@@ -24,7 +21,7 @@ public class StringLoader {
 	}
 
 	
-	public static String loadString(Context context, int resource)
+	public static String loadString(int resource)
 			throws IOException {
 		//InputStream is = new FileInputStream(filename); // object.getClass().getResourceAsStream(filename);
 		InputStream is = context.getResources().openRawResource(resource);
@@ -45,7 +42,7 @@ public class StringLoader {
 		return builder.toString();
 	}
 	
-	public static void setObject(Object givenObject) {
-		object = givenObject;
+	public static void setContext(Context context) {
+		StringLoader.context = context;
 	}
 }

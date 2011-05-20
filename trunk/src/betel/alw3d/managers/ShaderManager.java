@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import android.opengl.GLES20;
+import android.util.Log;
+import betel.alw3d.Alw3d;
 import betel.alw3d.renderer.ShaderProgram;
 import betel.alw3d.renderer.ShaderProgram.Shader;
 
@@ -46,23 +48,30 @@ public class ShaderManager {
 			GLES20.glShaderSource(shaderHandle, shader.source);
 			GLES20.glCompileShader(shaderHandle);
 			
-			GLES20.glAttachShader(shaderProgramHandle, shaderHandle);
+			int[] length = new int[1];
+			int[] status = new int[1];
 			
-			System.out.println("logShad: " +
+			GLES20.glGetShaderiv(shaderHandle, GLES20.GL_INFO_LOG_LENGTH, length, 0);
+			GLES20.glGetShaderiv(shaderHandle, GLES20.GL_COMPILE_STATUS, status, 0);
+			
+			Log.w(Alw3d.LOG_TAG, "logShad, Length: " + length[0] +" Status: " + status[0] + " " +
 					GLES20.glGetShaderInfoLog(shaderHandle));
+			
+			GLES20.glAttachShader(shaderProgramHandle, shaderHandle);
 			
 		}
 		
 		GLES20.glLinkProgram(shaderProgramHandle);
 		
-		System.out.println("logProg: " + 
-				GLES20.glGetShaderInfoLog(shaderProgramHandle));
+		Log.w(Alw3d.LOG_TAG, "logProg: " + 
+				GLES20.glGetProgramInfoLog(shaderProgramHandle));
 		
 		// TODO: validate
-		/*GLES20.glValidateProgram(shaderProgramHandle);
-		int validStatus = GLES20.glGetObjectParameteriARB(shaderProgramHandle,
-				GLES20.GL_OBJECT_VALIDATE_STATUS_ARB);
-		System.out.println("validProgStat: " + validStatus);*/
+		GLES20.glValidateProgram(shaderProgramHandle);
+		int[] validStatus = new int[1]; 
+		GLES20.glGetProgramiv(shaderProgramHandle,
+			GLES20.GL_VALIDATE_STATUS, validStatus, 0);
+		Log.w(Alw3d.LOG_TAG, ((Integer) validStatus[0]).toString());
 				
 	//	if(validStatus == GLES20.GL_TRUE)
 			shaderProgramHandles.put(shaderProgram, shaderProgramHandle);
