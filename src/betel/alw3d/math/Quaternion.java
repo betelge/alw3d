@@ -79,22 +79,23 @@ public class Quaternion
 		return result;
 	}
 
+	// TODO: Is this always correct?
 	public void mult(Vector3f vector, Vector3f result)
 	{
-		/*result.x =
-				(w * w + x * x - y * y - z * z) * vector.x
-				+ 2*(y * x - z * w) * vector.y
-				+ 2*(z * x + y * w) * vector.z;
+		result.x =
+				(1 - 2*y*y - 2*z*z) * vector.x
+				+ 2*(y*x - z*w) * vector.y
+				+ 2*(z*x + y*w) * vector.z;
 		result.y =
-				2*(x * y + w * z) * vector.x
-				+ (w * w + y * y - x * x - z * z) * vector.y
-				+ (2 * z * y - 2 * x * w) * vector.z;
+				2*(x*y - w*z) * vector.x
+				+ (1 - 2*x*x - 2*z*z) * vector.y
+				+ 2*(z*y - 2*x*w) * vector.z;
 		result.z =
-				2*(x * z - w * y) * vector.x
-				+ 2*(y * z + w * x) * vector.y
-				+ (w * w + z * z - x * x - y * y) * vector.z;*/
+				2*(x*z - w*y) * vector.x
+				+ 2*(y*z + w*x) * vector.y
+				+ (1 - 2*x*x - y*y) * vector.z;
 		
-		Vector3f vn = new Vector3f(vector);
+		/*Vector3f vn = new Vector3f(vector);
 		vn.normalizeThis();
 		Quaternion vecQuat = new Quaternion(vn.x, vn.y, vn.z, 0f);
 		
@@ -104,7 +105,7 @@ public class Quaternion
 		result.x = resQuat.x;
 		result.y = resQuat.y;
 		result.z = resQuat.z;
-		result.multThis(vector.getLength());
+		result.multThis(vector.getLength());*/
 	}
 
 	public Quaternion inverse()
@@ -179,6 +180,9 @@ public class Quaternion
 
 	public static Quaternion slerp(Quaternion q1, Quaternion q2, float value)
 	{
+		//TODO: This is just a tmep workaround for "exploding" objects.
+		if( value > 1 ) value = 1;
+		
 		Quaternion result = new Quaternion();
 
 		// Cos( 1/2 (angle between the quaternions) )

@@ -3,6 +3,8 @@ package betel.alw3d.renderer;
 import java.util.HashSet;
 import java.util.Set;
 
+import betel.ATest.R;
+
 import android.opengl.GLES20;
 
 import utils.StringLoader;
@@ -13,15 +15,13 @@ public class ShaderProgram {
 
 	static public class Shader {
 		
-		static public Shader DEFAULT_VERTEX = null;
-		//	new Shader(Type.VERTEX, StringLoader.loadStringExceptionless("/default.vertex"));
+		static public Shader DEFAULT_VERTEX =
+			new Shader(Type.VERTEX, StringLoader.loadStringExceptionless(R.raw.default_v));
 		
-		static public Shader DEFAULT_FRAGMENT = null;
-		//	new Shader(Type.FRAGMENT, StringLoader.loadStringExceptionless("/normal.fragment"),
-		//			StringLoader.loadStringExceptionless("/normal_ff.fragment"));
+		static public Shader DEFAULT_FRAGMENT =
+			new Shader(Type.FRAGMENT, StringLoader.loadStringExceptionless(R.raw.default_f));
 		
 		final public String source;
-		final public String source_ff;
 		final public Type type;
 		
 		public Shader(Type type, String source) {
@@ -31,7 +31,6 @@ public class ShaderProgram {
 		public Shader(Type type, String source, String source_ff) {
 			this.type = type;
 			this.source = source;
-			this.source_ff = source_ff;
 		}
 
 		public enum Type {

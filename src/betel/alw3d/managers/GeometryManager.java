@@ -1,6 +1,5 @@
 package betel.alw3d.managers;
 
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -48,7 +47,7 @@ public class GeometryManager {
 	}
 	
 	public class AttributeInfo {
-		String name;
+		public String name;
 		public Type type;
 		public int size;
 		public boolean normalized;
@@ -165,6 +164,8 @@ public class GeometryManager {
 	}
 
 	final public GeometryInfo getGeometryInfo(Geometry geometry) {
+		if (geometry == null)
+			geometry = Geometry.QUAD;
 		if (tryToUpload(geometry))
 			return geometryInfos.get(geometry);
 		else
@@ -196,7 +197,7 @@ public class GeometryManager {
 
 			// Upload index data to the index VBO
 			GLES20.glBufferSubData(GLES20.GL_ELEMENT_ARRAY_BUFFER,
-					indexOffset, geometry.getIndices().capacity(), geometry.getIndices());
+					indexOffset, geometry.getIndices().capacity()*4, geometry.getIndices());
 
 			// Set and update the index VBO offset
 			geometryInfo.indexOffset = indexOffset;
@@ -227,7 +228,7 @@ public class GeometryManager {
 				case FLOAT:
 					GLES20.glBufferSubData(
 							GLES20.GL_ARRAY_BUFFER,
-							dataOffset, ((ByteBuffer) geometryAttribute.buffer).capacity(), //TODO ok? float-byte
+							dataOffset, ((FloatBuffer) geometryAttribute.buffer).capacity()*4,
 							(FloatBuffer) geometryAttribute.buffer);
 					break;
 				}
