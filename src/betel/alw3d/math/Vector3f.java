@@ -6,6 +6,7 @@ public class Vector3f
 {
 	public float x, y, z;
 
+	public final static Vector3f ZERO = new Vector3f(0, 0, 0);
 	public final static Vector3f UNIT_X = new Vector3f(1, 0, 0);
 	public final static Vector3f UNIT_Y = new Vector3f(0, 1, 0);
 	public final static Vector3f UNIT_Z = new Vector3f(0, 0, 1);

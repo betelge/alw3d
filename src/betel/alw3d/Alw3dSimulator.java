@@ -81,7 +81,7 @@ public class Alw3dSimulator {
 			if (timeAccumulator >= timeStep) {
 				timeAccumulator -= timeStep;
 				
-				Log.d(Alw3d.LOG_TAG, "SimTick: " + tick++);
+				//Log.d(Alw3d.LOG_TAG, "SimTick: " + tick++);
 				
 				simulation.setTime(simTime);
 				simulation.setRealTime(time - timeAccumulator);

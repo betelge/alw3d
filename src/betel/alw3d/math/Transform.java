@@ -1,5 +1,7 @@
 package betel.alw3d.math;
 
+import java.nio.FloatBuffer;
+
 import android.util.Log;
 import betel.alw3d.Alw3d;
 
@@ -7,6 +9,8 @@ public class Transform {
 	private Vector3f position;
 	private Quaternion rotation;
 	private Vector3f scale;
+	
+	public static final Transform UNIT = new Transform(Vector3f.ZERO, Quaternion.UNIT);
 
 	public Transform() {
 		this(new Vector3f(), new Quaternion());
@@ -65,9 +69,21 @@ public class Transform {
 				.mult(scale)), rotation.mult(transform.rotation), scale
 				.mult(transform.scale));
 	}
+	
+	public void mult(Transform transform, Transform result) {
+		result.set(this);
+		rotation.mult(transform.position,result.position);
+		result.position.multThis(scale);
+		result.position.addThis(this.position);
+		result.scale.multThis(transform.scale);
+		result.rotation.multThis(transform.rotation);
+	}
 
+	private static Vector3f tempVector = new Vector3f(); 
 	public void multThis(Transform transform) {
-		position.addThis(rotation.mult(transform.position).mult(scale));
+		rotation.mult(transform.position, tempVector);
+		tempVector.multThis(scale);
+		position.addThis(tempVector);
 		scale.multThis(transform.scale);
 		rotation.multThis(transform.rotation);
 	}
@@ -77,6 +93,11 @@ public class Transform {
 		result.invertThis();
 		return result;
 	}
+	
+	public void invert(Transform result) {
+		result.set(this);
+		result.invertThis();
+	}
 
 	public void invertThis() {
 		position.negateThis();
@@ -84,9 +105,7 @@ public class Transform {
 		rotation.mult(position, position);
 	}
 
-	public Transform interpolate(Transform transform, float x) {
-		Log.d(Alw3d.LOG_TAG, "Interpolating: " + x + " " + this.hashCode());
-		
+	/*public Transform interpolate(Transform transform, float x) {		
 		Vector3f vec = this.position.mult(1 - x)
 				.add(transform.position.mult(x));
 		Vector3f sca = null;
@@ -94,6 +113,22 @@ public class Transform {
 		Quaternion rot = Quaternion.slerp(this.rotation, transform.rotation, x);
 		
 		return new Transform(vec, rot, sca);
+	}*/
+	
+	public void interpolate(Transform transform, float x, Transform result) {
+		result.position.set( (1-x)*this.position.x + x*transform.position.x,
+				(1-x)*this.position.y + x*transform.position.y,
+				(1-x)*this.position.z + x*transform.position.z );
+		
+		result.scale.set( (1-x)*this.scale.x + x*transform.scale.x,
+				(1-x)*this.scale.y + x*transform.scale.y,
+				(1-x)*this.scale.z + x*transform.scale.z );
+		
+		Quaternion.slerp(this.rotation, transform.rotation, x, result.rotation);
+		
+		/*for(int i = 0; i < 30; i++) {
+			new Transform();
+		}*/
 	}
 
 	public Vector3f getPosition() {
@@ -120,20 +155,31 @@ public class Transform {
 		this.scale = scale;
 	}
 	
-	public Transform getCameraTransform() {
-		Vector3f camPos = position.mult(-1f);
-		Quaternion camRot = rotation.inverse();
-
-		Transform rotationTransform = new Transform(new Vector3f(), camRot);
-		Transform translationTransform = new Transform(camPos, new Quaternion());
-
+	private static Transform rotationTransform = new Transform();
+	private static Transform translationTransform = new Transform();
+	public void getCameraTransform(Transform result) {
+		
+		rotationTransform.set(Vector3f.ZERO, rotation);
+		translationTransform.set(position, Quaternion.UNIT);
+		
+		translationTransform.getPosition().multThis(-1f);
+		rotationTransform.getRotation().inverseThis();
+		
 		// Inverted order
-		return rotationTransform.mult(translationTransform);
+		rotationTransform.mult(translationTransform, result);
 	}
 	
-	public float[] toMatrix4() {
-		float[] m = new float[16];
-		float[] qm = rotation.toMatrix3();
+	private static float[] m = new float[16];
+	public void toMatrix4(FloatBuffer buf) {
+		this.toMatrix4(m);
+		buf.clear();
+		buf.put(m);
+		buf.flip();
+	}
+	
+	private static float[] qm = new float[9];
+	public float[] toMatrix4(float[] m) {
+		rotation.toMatrix3(qm);
 		
 		// Rotation
 		for(int i = 0; i < 3; i++)

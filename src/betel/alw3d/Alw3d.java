@@ -72,8 +72,8 @@ public class Alw3d extends Activity{
     @Override
     protected void onStop() {
     	super.onStop();
-    	if(simulator != null)
-    		simulator.exit();
+    	/*if(simulator != null)
+    		simulator.exit();*/
     }
     
     private void setupLevel() {
@@ -112,7 +112,7 @@ public class Alw3d extends Activity{
     	Set<Node> simNodes = new HashSet<Node>();
     	simNodes.add(rootNode);
     	simulator = new Alw3dSimulator(simNodes);
-    	simulator.setSimulation(new Alw3dSimulation(600));
+    	simulator.setSimulation(new Alw3dSimulation(500));
     	model.setSimulator(simulator);
     	simulator.start();
     }

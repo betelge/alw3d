@@ -25,6 +25,7 @@ import betel.alw3d.managers.ShaderManager;
 import betel.alw3d.managers.TextureManager;
 import betel.alw3d.managers.GeometryManager.AttributeInfo;
 import betel.alw3d.managers.GeometryManager.GeometryInfo;
+import betel.alw3d.math.Quaternion;
 import betel.alw3d.math.Transform;
 import betel.alw3d.math.Vector3f;
 import betel.alw3d.renderer.passes.ClearPass;
@@ -36,6 +37,9 @@ public class Alw3dRenderer implements Renderer{
 	
 	private Model model;
 	
+	// TODO: temp
+	private long lastTime = 0;
+	
 	GeometryManager geometryManager;
 	ShaderManager shaderManager;
 	TextureManager textureManager;
@@ -44,7 +48,7 @@ public class Alw3dRenderer implements Renderer{
 
 	// TODO: fix this in a better way
 	// Current camera transform
-	Transform cameraTransform;
+	Transform cameraTransform = new Transform();
 
 	// TODO: Create matrix class?
 	FloatBuffer modelViewMatrix;
@@ -79,43 +83,34 @@ public class Alw3dRenderer implements Renderer{
 		perspectiveMatrix = FloatBuffer.allocate(16);
 	}
 	
-	static public void setPerspectiveMatrix( FloatBuffer perspectiveMatrix, 
+	static public void setPerspectiveMatrix( FloatBuffer m, 
 			float aspect, float fov, float zNear, float zFar ) {
 		// Assumes that perspectveMatrix has size >=16 and the position 0.
 		
-		float[] floats = getPerspectiveMatrix(aspect, fov, zNear, zFar);
-		perspectiveMatrix.put(floats);
-		perspectiveMatrix.flip();
-	}
-	
-	static public float[] getPerspectiveMatrix( 
-			float aspect, float fov, float zNear, float zFar ) {
-		// Assumes that perspectveMatrix has size >=16 and the position 0.
-		
-		float[] floats = new float[16]; 
+		m.clear();
 				
 		float h = 1f / (float) Math.tan(fov * (float) Math.PI / 360f);
-		floats[0] = h / aspect;
-		floats[1] = 0f;
-		floats[2] = 0f;
-		floats[3] = 0f;
+		m.put(h / aspect);
+		m.put(0f);
+		m.put(0f);
+		m.put(0f);
 		
-		floats[4] = 0f;
-		floats[5] = h;
-		floats[6] = 0f;
-		floats[7] = 0f;
+		m.put(0f);
+		m.put(h);
+		m.put(0f);
+		m.put(0f);
 	
-		floats[8] = 0f;
-		floats[9] = 0f;
-		floats[10] = (zNear + zFar) / (zNear - zFar);
-		floats[11] = -1f;
+		m.put(0f);
+		m.put(0f);
+		m.put( (zNear + zFar) / (zNear - zFar) );
+		m.put(-1f);
 	
-		floats[12] = 0f;
-		floats[13] = 0f;
-		floats[14] = 2f * (zNear * zFar) / (zNear - zFar);
-		floats[15] = 0f;
+		m.put(0f);
+		m.put(0f);
+		m.put( 2f * (zNear * zFar) / (zNear - zFar));
+		m.put(0f);
 		
-		return floats;
+		m.flip();
 	}
 	
 	public void setState(SetPass.State state, boolean set) {
@@ -196,10 +191,12 @@ public class Alw3dRenderer implements Renderer{
 	
 	private void bindAttributes(List<AttributeInfo> attributeInfos, int shaderProgram) {	
 		// Bind attribute pointers
-		Iterator<AttributeInfo> it = attributeInfos.iterator();
-		AttributeInfo attributeInfo;
-		while (it.hasNext()) {
-			attributeInfo = it.next();
+	//	Iterator<AttributeInfo> it = attributeInfos.iterator();
+	//	AttributeInfo attributeInfo;
+	//	while (it.hasNext()) {
+	//	attributeInfo = it.next();
+		
+		for(AttributeInfo attributeInfo : attributeInfos) {
 			
 			// TODO: Use a get to get the right index from OpenGL?
 			int index = GLES20.glGetAttribLocation(shaderProgram, attributeInfo.name);
@@ -213,9 +210,9 @@ public class Alw3dRenderer implements Renderer{
 
 	public void renderSceneNonOpenGL(Node rootNode, CameraNode cameraNode) {
 		backRenderNodes.clear();
-		backRenderTransforms.clear();
+		//backRenderTransforms.clear();
 
-		cameraTransform = cameraNode.getAbsoluteTransform().getCameraTransform();
+		cameraNode.getAbsoluteTransform().getCameraTransform(cameraTransform);
 		
 		float aspect = cameraNode.getAspect();
 		if(aspect == 0)
@@ -225,9 +222,9 @@ public class Alw3dRenderer implements Renderer{
 				cameraNode.getFov(), cameraNode.getzNear(), cameraNode.getzFar());
 		
 		time = System.nanoTime();
-		Log.d(Alw3d.LOG_TAG, "renderTime: " + time);
+		//Log.d(Alw3d.LOG_TAG, "renderTime: " + time);
 
-		ProcessNode(rootNode, new Transform());
+		ProcessNode(rootNode, 0,0,0, 0,0,0,1);
 
 		List<GeometryNode> tempRenderNodes = backRenderNodes;
 		List<Transform> tempRenderTransforms = backRenderTransforms;
@@ -280,12 +277,18 @@ public class Alw3dRenderer implements Renderer{
 		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
-		Iterator<GeometryNode> it = renderNodes.iterator();
+	/*	Iterator<GeometryNode> it = renderNodes.iterator();
 		Iterator<Transform> tit = renderTransforms.iterator();
 		while (it.hasNext() && tit.hasNext()) {
 			GeometryNode geometryNode = it.next();
-			Transform transform = tit.next();
+			Transform transform = tit.next(); */
+		
+		int length = renderNodes.size();
+		for(int i = 0; i < length; i++) {
 
+			GeometryNode geometryNode = renderNodes.get(i);
+			Transform transform = renderTransforms.get(i);
+			
 			Geometry geometry = geometryNode.getGeometry();
 
 			if (oldGeometry != geometry || geometry == null) {
@@ -346,17 +349,20 @@ public class Alw3dRenderer implements Renderer{
 			GLES20.glUniform3f(lightPosVectorLocation,
 				lightPosVector.x, lightPosVector.y, lightPosVector.z);
 
-			modelViewMatrix.clear();
+			/*modelViewMatrix.clear();
 			modelViewMatrix.put(transform.toMatrix4());
-			modelViewMatrix.flip();
+			m
+			odelViewMatrix.flip();*/
+			transform.toMatrix4(modelViewMatrix);
 
 			GLES20.glUniformMatrix4fv(modelViewMatrixLocation, 1,
 					false, modelViewMatrix);
 			GLES20.glUniformMatrix4fv(perspectiveMatrixLocation, 1,
 					false, perspectiveMatrix);
-			normalMatrix.clear();
+			/*normalMatrix.clear();
 			normalMatrix.put(transform.getRotation().toMatrix3());
-			normalMatrix.flip();
+			normalMatrix.flip();*/
+			transform.getRotation().toMatrix3(normalMatrix);
 			GLES20.glUniformMatrix3fv(normalMatrixLocation, 1,
 					false, normalMatrix);
 	
@@ -424,37 +430,61 @@ public class Alw3dRenderer implements Renderer{
 		oldFBO = fbo;
 	}
 
-	private void ProcessNode(Node node, Transform transform) {
-
-		// System.out.println("Renderer processing node: " + node);
-
-		Transform currentTransform = null;
+	private static Transform currentTransform = new Transform();
+	private static Transform transform = new Transform();
+	private static Transform tempTransform = new Transform();
+	private void ProcessNode(Node node, float x, float y, float z, float a, float b, float c, float w) {
+		transform.getPosition().set(x, y, z);
+		transform.getRotation().set(a, b, c, w);
+		currentTransform.set(Transform.UNIT);
+		
 		if (node instanceof Movable) {
 			Movable movable = (Movable) node;
 			float ratio = 0f;
 			if (movable.getNextTime() != movable.getLastTime())
 				ratio = (time - movable.getLastTime())
 						/ (float)(movable.getNextTime() - movable.getLastTime());
-			currentTransform = transform.mult(movable.getTransform()
-					.interpolate(movable.getNextTransform(), ratio));
+			movable.getTransform().interpolate(movable.getNextTransform(), ratio,
+					tempTransform);
+			
+			transform.mult(tempTransform, currentTransform);
 		} else {
-			currentTransform = transform.mult(node.getTransform());
+			 transform.mult(node.getTransform(), currentTransform);
 		}
 
 		if (node instanceof GeometryNode) {
 			backRenderNodes.add((GeometryNode) node);
-			backRenderTransforms.add(cameraTransform.mult(currentTransform));
+			int index = backRenderNodes.size() - 1;
+			//backRenderTransforms.add(cameraTransform.mult(currentTransform));
+			if(backRenderTransforms.size() <= index)
+				backRenderTransforms.add(new Transform());
+			backRenderTransforms.get(index).set(currentTransform);
 		}
 
 		// TODO: Handle multiple lights
 		if (node instanceof Light) {
-			backLightTransform.set(cameraTransform.mult(currentTransform));
+			cameraTransform.mult(currentTransform, backLightTransform);
 		}
-		synchronized (node) {
+		/*synchronized (node) {
 			Iterator<Node> it = node.getChildren().iterator();
 			while (it.hasNext()) {
 				ProcessNode(it.next(), currentTransform);
 			}
+		}*/
+		
+		Vector3f pos = currentTransform.getPosition();
+		Quaternion rot = currentTransform.getRotation();
+		
+		float px = pos.x;
+		float py = pos.y;
+		float pz = pos.z;
+		float rx = rot.x;
+		float ry = rot.y;
+		float rz = rot.z;
+		float rw = rot.w;
+		
+		for(Node child : node.getChildren()) {
+			ProcessNode(child, px, py, pz, rx, ry, rz, rw);
 		}
 	}
 
@@ -513,17 +543,41 @@ public class Alw3dRenderer implements Renderer{
 			}
 		}
 	}
+	
+	private float lastRenderTime = 0;
+	private float lastSimTime = 0;
 
 	@Override
 	public void onDrawFrame(GL10 arg0) {
+		
+		//System.gc();
+		
+		// TODO: temp
+		long time = System.nanoTime();
+		
+		/*float dt = (time - lastTime)/(float)1000000;
+		
+		if( dt > 30) {
+			Log.d(Alw3d.LOG_TAG, "Total: " + dt + " Sim: " + lastSimTime + " Rend: " + lastRenderTime);
+		}*/
+		
+		lastRenderTime = (time - lastTime)/(float)1000000;
+		lastTime = time;
+			
 		Alw3dSimulator simulator = model.getSimulator();
 		if(simulator != null)
 			simulator.steps();
+			
+		long simt = System.nanoTime();
+		lastSimTime = (simt - lastTime)/(float)1000000;
+
 		
 		List<RenderPass> renderPasses = model.getRenderPasses();
-		synchronized (renderPasses) {
+		//synchronized (renderPasses) {
 			processRenderPasses(renderPasses);
-		}
+		//}
+			
+		lastRenderTime = (System.nanoTime() - simt)/(float)1000000;
 	}
 
 	@Override
@@ -547,10 +601,12 @@ public class Alw3dRenderer implements Renderer{
 	}
 	
 	private void processRenderPasses(List<RenderPass> renderPasses) {
-		Iterator<RenderPass> it = renderPasses.iterator();
-		while(it.hasNext()) {
+	//	Iterator<RenderPass> it = renderPasses.iterator();
+	//	while(it.hasNext()) {
+		
+		for(RenderPass renderPass : renderPasses) {
 			
-			RenderPass renderPass = it.next();
+		//	RenderPass renderPass = it.next();
 			if(renderPass instanceof SetPass) {
 				setState(((SetPass) renderPass).getState(),
 						((SetPass) renderPass).isSet());
@@ -561,7 +617,7 @@ public class Alw3dRenderer implements Renderer{
 			}
 			else if(renderPass instanceof SceneRenderPass) {
 				synchronized (((SceneRenderPass) renderPass).getRootNode()) {
-				renderScene(
+				renderScene/*NonOpenGL*/(
 						((SceneRenderPass) renderPass).getRootNode(),
 						((SceneRenderPass) renderPass).getCameraNode(),
 						renderPass.getFbo(),

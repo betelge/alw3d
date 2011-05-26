@@ -1,12 +1,15 @@
 
 package betel.alw3d.math;
 
+import java.nio.FloatBuffer;
+
 
 public class Quaternion
 {
-	private float x, y, z, w;
-
+	public float x, y, z, w;
 	
+	public static final Quaternion UNIT = new Quaternion(0f, 0f, 0f, 1f);
+
 	public Quaternion()
 	{
 		x = y = z = 0;
@@ -178,12 +181,12 @@ public class Quaternion
 		return this;
 	}
 
-	public static Quaternion slerp(Quaternion q1, Quaternion q2, float value)
+	// TODO: not thread safe.
+	private static Quaternion q3 = new Quaternion();
+	public static Quaternion slerp(Quaternion q1, Quaternion q2, float value, Quaternion result)
 	{
 		//TODO: This is just a tmep workaround for "exploding" objects.
 		if( value > 1 ) value = 1;
-		
-		Quaternion result = new Quaternion();
 
 		// Cos( 1/2 (angle between the quaternions) )
 		float cosHalfAngle =
@@ -196,7 +199,7 @@ public class Quaternion
 			return result;
 		}
 
-		Quaternion q3 = new Quaternion(q2);
+		q3.set(q2);
 		if(cosHalfAngle < 0f)
 		{
 			q3.x = -q3.x;
@@ -275,8 +278,26 @@ public class Quaternion
 		w *= inverseNorm;
 	}
 
-	public float[] toMatrix3() {
-		float[] m = new float[9];
+	public void toMatrix3(FloatBuffer buf) {
+		buf.clear();
+		
+		buf.put(1 - 2 * (y*y + z*z));
+		buf.put(2 * (x*y + z*w));
+		buf.put(2 * (x*z - y*w));
+		
+		buf.put(2 * (x*y - z*w));
+		buf.put(1 - 2* (x*x + z*z));
+		buf.put(2 * (y*z + x*w));
+		
+		buf.put(2 * (x*z + y*w));
+		buf.put(2 * (y*z - x*w));
+		buf.put(1 - 2 * (x*x + y*y));
+		
+		buf.flip();
+	}
+	
+	public float[] toMatrix3(float[] m) {
+		//float[] m = new float[9];
 		
 		m[0] = 1 - 2 * (y*y + z*z);
 		m[1] = 2 * (x*y + z*w);
