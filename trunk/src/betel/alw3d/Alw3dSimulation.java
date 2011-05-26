@@ -1,8 +1,5 @@
 package betel.alw3d;
 
-import java.util.Iterator;
-
-import android.util.Log;
 import betel.alw3d.renderer.CameraNode;
 import betel.alw3d.renderer.Movable;
 import betel.alw3d.renderer.Node;
@@ -153,7 +150,7 @@ public class Alw3dSimulation {
 			movableNode.getNextTransform().addThis(movableNode.getMovement());
 			movableNode.setLastTime(realTime);
 			movableNode.setNextTime(realTime + timeStep);
-			Log.d(Alw3d.LOG_TAG, "simRealTime+1: " + (realTime + timeStep));
+			//Log.d(Alw3d.LOG_TAG, "simRealTime+1: " + (realTime + timeStep));
 
 			/*
 			 * Transform localTransform = ((Movable) node).getLocalTransform();
@@ -173,13 +170,16 @@ public class Alw3dSimulation {
 			 */
 		}
 
-		synchronized (node.getChildren()) {
+		/*synchronized (node.getChildren()) {
 			Iterator<Node> iterator = node.getChildren().iterator();
 
 			while (iterator.hasNext()) {
 				processNode(iterator.next());
 			}
-		}
+		}*/
+		
+		for( Node child : node.getChildren() )
+			processNode(child);
 	}
 
 	public void setRealTime(long realTime) {
