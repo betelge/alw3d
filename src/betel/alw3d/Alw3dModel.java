@@ -8,7 +8,7 @@ import betel.alw3d.renderer.passes.RenderPass;
 public class Alw3dModel {
 	private int width, height;
 	
-	List<RenderPass> renderPasses;
+	List<RenderPass> renderPasses = new LinkedList<RenderPass>();
 	
 	private Alw3dSimulator simulator;
 
@@ -21,8 +21,6 @@ public class Alw3dModel {
 	}
 	
 	public void addRenderPass(RenderPass renderPass) {
-		if(this.renderPasses == null)
-			renderPasses = new LinkedList<RenderPass>();
 		this.renderPasses.add(renderPass);
 	}
 

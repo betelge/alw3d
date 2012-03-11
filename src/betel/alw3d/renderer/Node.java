@@ -30,7 +30,7 @@ public class Node {
 	}
 	
 	public Transform getAbsoluteTransform(){
-		if(parent.getParent() != null) // Check if parent is root. Ignores root transform.
+		if(parent != null && parent.parent != null) // Check if self or parent is root. Ignores root transform.
 			return parent.getAbsoluteTransform().mult(getTransform());
 		else
 			return getTransform();
@@ -50,10 +50,5 @@ public class Node {
 
 	public Set<Node> getChildren() {
 		return children;
-	}
-	
-	// TODO: is this ok/good to have?
-	public Node getParent() {
-		return parent;
 	}
 }

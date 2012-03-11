@@ -3,7 +3,6 @@ package betel.alw3d.managers;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import betel.alw3d.renderer.Geometry.Attribute;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,7 +14,6 @@ import android.opengl.GLES20;
 import android.util.Log;
 import static fix.android.opengl.GLES20.glVertexAttribPointer;
 import betel.alw3d.Alw3d;
-import betel.alw3d.renderer.GroupGeometry;
 import betel.alw3d.renderer.Geometry;
 import betel.alw3d.renderer.Geometry.Type;
 import betel.alw3d.renderer.UpdatableGeometry;
@@ -30,9 +28,9 @@ public class GeometryManager {
 	private int dataOffset = 0;
 	
 	// Used for GroupGeometries
-	private int groupIndexVBOHandle = 0;
+	/*private int groupIndexVBOHandle = 0;
 	private int groupIndexOffset = 0;
-	private int groupDataOffset = 0;
+	private int groupDataOffset = 0;*/
 	
 	// Direct buffer for communication with OpenGL
 	IntBuffer handleBuffer = ByteBuffer.allocateDirect(8).asIntBuffer();
@@ -323,7 +321,7 @@ public class GeometryManager {
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, dataVBOHandle);
 			geometryInfo.indexVBO = indexVBOHandle;
 			geometryInfo.dataVBO = dataVBOHandle;
-
+			
 			// Upload index data to the index VBO
 			GLES20.glBufferSubData(GLES20.GL_ELEMENT_ARRAY_BUFFER,
 					indexOffset, count*4, geometry.getIndices());
@@ -447,9 +445,9 @@ public class GeometryManager {
 		indexOffset = 0;
 		dataOffset = 0;
 		
-		groupIndexVBOHandle = 0;
+		/*groupIndexVBOHandle = 0;
 		groupIndexOffset = 0;
-		groupDataOffset = 0;
+		groupDataOffset = 0;*/
 		
 		geometryInfos.clear();
 	}
