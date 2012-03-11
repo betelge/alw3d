@@ -17,7 +17,7 @@ import android.opengl.GLSurfaceView.Renderer;
 import android.util.Log;
 import betel.alw3d.Alw3d;
 import betel.alw3d.Alw3dSimulator;
-import betel.alw3d.Model;
+import betel.alw3d.Alw3dModel;
 import betel.alw3d.managers.FBOManager;
 import betel.alw3d.managers.GeometryManager;
 import betel.alw3d.managers.RenderBufferManager;
@@ -35,7 +35,7 @@ import betel.alw3d.renderer.passes.SetPass;
 
 public class Alw3dRenderer implements Renderer{
 	
-	private Model model;
+	private Alw3dModel model;
 	
 	// TODO: temp
 	private long lastTime = 0;
@@ -70,7 +70,7 @@ public class Alw3dRenderer implements Renderer{
 
 	long time = 0;
 
-	public Alw3dRenderer(Model model) {
+	public Alw3dRenderer(Alw3dModel model) {
 		this.model = model;
 		
 		// Initialize model-view matrix
@@ -187,6 +187,9 @@ public class Alw3dRenderer implements Renderer{
 		// Bind VBOs
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geometryInfo.indexVBO);
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geometryInfo.dataVBO);
+		
+		//Log.w(Alw3d.LOG_TAG, "Binding indexVBO: " + geometryInfo.indexVBO);
+		//Log.w(Alw3d.LOG_TAG, "Binding dataVBO: " + geometryInfo.dataVBO);
 	}
 	
 	private void bindAttributes(List<AttributeInfo> attributeInfos, int shaderProgram) {	
@@ -205,7 +208,10 @@ public class Alw3dRenderer implements Renderer{
 					attributeInfo.size, attributeInfo.type
 					.getType(), attributeInfo.normalized,
 					0, attributeInfo.dataOffset);
+			
+			//Log.w(Alw3d.LOG_TAG, "Binding dataOffset: " + attributeInfo.dataOffset);
 		}
+		
 	}
 
 	public void renderSceneNonOpenGL(Node rootNode, CameraNode cameraNode) {
@@ -276,6 +282,9 @@ public class Alw3dRenderer implements Renderer{
 		// Enable alpha
 		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		
+		// TODO: temp
+		GLES20.glDisable(GLES20.GL_CULL_FACE);
 
 	/*	Iterator<GeometryNode> it = renderNodes.iterator();
 		Iterator<Transform> tit = renderTransforms.iterator();
@@ -304,6 +313,8 @@ public class Alw3dRenderer implements Renderer{
 				material = geometryNode.getMaterial();
 			else
 				material = overrideMaterial;
+			if(material == null)
+				material = Material.DEFAULT;
 
 			// Set shader
 			Map<String, Texture> textures = null;
@@ -374,6 +385,7 @@ public class Alw3dRenderer implements Renderer{
 			// Draw
 			glDrawElements(geometry.getPrimitiveType().getValue(), geometryInfo.count,
 					GLES20.GL_UNSIGNED_INT, geometryInfo.indexOffset);
+			//Log.w(Alw3d.LOG_TAG, "Rendering with indexOffset: " + geometryInfo.indexOffset + "  and count: " + geometryInfo.count);
 	
 			oldGeometry = geometry;
 			oldGeometryInfo = geometryInfo;
@@ -636,5 +648,13 @@ public class Alw3dRenderer implements Renderer{
 				processRenderPasses(((RenderMultiPass) renderPass).getRenderPasses());
 			}
 		}
+	}
+	
+	public void forgetOpenGLContext() {
+		geometryManager.reset();
+		shaderManager.reset();
+		textureManager.reset();
+		renderBufferManager.reset();
+		fboManager.reset();
 	}
 }

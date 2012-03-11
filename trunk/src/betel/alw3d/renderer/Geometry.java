@@ -8,9 +8,9 @@ import android.opengl.GLES20;
 
 public class Geometry {
 	static public Geometry QUAD;
-	
-	final IntBuffer indices;
-	final List<Attribute> attributes;
+		
+	private IntBuffer indices;
+	private List<Attribute> attributes;
 	public enum PrimitiveType {
 		POINTS(GLES20.GL_POINTS), LINES(GLES20.GL_LINES), LINE_STRIP(GLES20.GL_LINE_STRIP),
 		TRIANGLES(GLES20.GL_TRIANGLES), TRIANGLE_STRIP(GLES20.GL_TRIANGLE_STRIP);
@@ -59,16 +59,28 @@ public class Geometry {
 	public Geometry(IntBuffer indices, List<Attribute> attributes) {
 		this(PrimitiveType.TRIANGLES, indices, attributes);
 	}
-	
+		
 	public IntBuffer getIndices() {
 		return indices;
+	}
+	
+	public void setIndices(IntBuffer indices) {
+		this.indices = indices;
 	}
 	
 	public List<Attribute> getAttributes() {
 		return attributes;
 	}
+	
+	public void setAttributes(List<Attribute> attributes) {
+		this.attributes = attributes;
+	}
 
 	public PrimitiveType getPrimitiveType() {
 		return primitiveType;
+	}
+
+	public int getIndexCount() {
+		return indices.capacity();
 	}
 }

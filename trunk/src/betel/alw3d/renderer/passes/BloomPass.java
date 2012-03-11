@@ -6,7 +6,6 @@ import java.util.Set;
 
 import utils.StringLoader;
 
-import betel.ATest.R;
 import betel.alw3d.renderer.FBO;
 import betel.alw3d.renderer.Material;
 import betel.alw3d.renderer.QuadRenderPass;
@@ -27,7 +26,7 @@ public class BloomPass extends RenderMultiPass {
 	final int height = 512;
 	final float mipmapLevel = 2f;
 	
-	final int vertexFile = R.raw.direct_v;
+	final int vertexFile = 0;// R.raw.direct_v;
 /*	final int bloomFragmentFile = "/bloom.fragment";
 	final int clampFragmentFile = "/clamp.fragment";
 	final int blendFragmentFile = "/blend.fragment";*/

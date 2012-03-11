@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import betel.ATest.R;
 import betel.alw3d.math.Vector3f;
 import betel.alw3d.renderer.CameraNode;
 import betel.alw3d.renderer.Geometry;
@@ -24,8 +23,8 @@ public class Alw3d extends Activity{
 	
 	public static final String LOG_TAG = "alw3d";
 	
-	private Model model;
-	private View surface;
+	private Alw3dModel model;
+	private Alw3dView surface;
 	private Alw3dSimulator simulator;
 	
     /** Called when the activity is first created. */
@@ -38,12 +37,10 @@ public class Alw3d extends Activity{
         StringLoader.setContext(this);
         GeometryLoader.setContext(this);
         
-        model = new Model();
-        surface = new View(this, model);
+        model = new Alw3dModel();
+        surface = new Alw3dView(this, model);
         setContentView(surface);
-       
-        setupLevel();
-        
+               
     }
 
     @Override
@@ -73,45 +70,4 @@ public class Alw3d extends Activity{
     		simulator.exit();*/
     }
     
-    private void setupLevel() {
-    	Node rootNode = new Node();
-    	CameraNode cameraNode = new CameraNode(60, 0, 0.01f, 100);
-
-    	
-    	Light light = new Light();
-    	light.getTransform().setPosition(new Vector3f(-4f,3f, 0f));
-    	
-    	Geometry geometry = GeometryLoader.loadObj(R.raw.object);
-    	
-    	Random rand = new Random(74367246l);
-    	
-    	int numOfNodes = 50;
-    	Node[] nodes = new Node[numOfNodes];
-    	for(int i = 0; i < numOfNodes; i++) {
-    		nodes[i] = new MovableGeometryNode(geometry, Material.DEFAULT);
-    		nodes[i].getTransform().getPosition().set(
-    				10*(rand.nextFloat()-0.5f), 10*(rand.nextFloat()-0.5f), 10*(rand.nextFloat()-0.5f)-15);
-    		((Movable)nodes[i]).getMovement().getRotation().fromAngleAxis(0.2f*(rand.nextFloat()-0.5f),
-    				new Vector3f(rand.nextFloat(), rand.nextFloat(), rand.nextFloat()));
-    		
-        	rootNode.attach(nodes[i]);
-    	}
-    	
-    	//nodes[0].getTransform().getScale().multThis(5f);
-    	
-    	rootNode.attach(cameraNode);
-    	rootNode.attach(light);
-    	
-    	SceneRenderPass sceneRenderPass = new SceneRenderPass(rootNode, cameraNode);
-    	model.addRenderPass(new ClearPass(ClearPass.COLOR_BUFFER_BIT | ClearPass.DEPTH_BUFFER_BIT, null));
-    	model.addRenderPass(sceneRenderPass);
-    	
-    	Set<Node> simNodes = new HashSet<Node>();
-    	simNodes.add(rootNode);
-    	simulator = new Alw3dSimulator(simNodes);
-    	simulator.setSimulation(new Alw3dSimulation(50));
-    	model.setSimulator(simulator);
-    	Thread.yield();
-    	simulator.start();
-    }
 }
