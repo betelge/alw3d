@@ -483,8 +483,11 @@ public class Alw3dRenderer implements Renderer{
 		float rz = rot.z;
 		float rw = rot.w;
 		
-		for(Node child : node.getChildren()) {
-			ProcessNode(child, px, py, pz, rx, ry, rz, rw);
+		
+		if(!node.getChildren().isEmpty()) {
+			for(Node child : node.getChildren()) {
+				ProcessNode(child, px, py, pz, rx, ry, rz, rw);
+			}
 		}
 	}
 

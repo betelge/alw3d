@@ -5,17 +5,14 @@ import java.util.Random;
 import java.util.Set;
 
 import betel.ATest.R;
-import betel.alw3d.math.Quaternion;
 import betel.alw3d.math.Vector3f;
 import betel.alw3d.renderer.CameraNode;
 import betel.alw3d.renderer.Geometry;
-import betel.alw3d.renderer.GeometryNode;
 import betel.alw3d.renderer.Light;
 import betel.alw3d.renderer.Material;
 import betel.alw3d.renderer.Movable;
 import betel.alw3d.renderer.MovableGeometryNode;
 import betel.alw3d.renderer.Node;
-import betel.alw3d.renderer.ShaderProgram.Shader;
 import betel.alw3d.renderer.passes.ClearPass;
 import betel.alw3d.renderer.passes.SceneRenderPass;
 import utils.GeometryLoader;
@@ -88,19 +85,19 @@ public class Alw3d extends Activity{
     	
     	Random rand = new Random(74367246l);
     	
-    	int numOfNodes = 2;
+    	int numOfNodes = 50;
     	Node[] nodes = new Node[numOfNodes];
     	for(int i = 0; i < numOfNodes; i++) {
     		nodes[i] = new MovableGeometryNode(geometry, Material.DEFAULT);
     		nodes[i].getTransform().getPosition().set(
     				10*(rand.nextFloat()-0.5f), 10*(rand.nextFloat()-0.5f), 10*(rand.nextFloat()-0.5f)-15);
-    		((Movable)nodes[i]).getMovement().getRotation().fromAngleAxis(rand.nextFloat()-0.5f,
+    		((Movable)nodes[i]).getMovement().getRotation().fromAngleAxis(0.2f*(rand.nextFloat()-0.5f),
     				new Vector3f(rand.nextFloat(), rand.nextFloat(), rand.nextFloat()));
     		
         	rootNode.attach(nodes[i]);
     	}
     	
-    	nodes[0].getTransform().getScale().multThis(5f);
+    	//nodes[0].getTransform().getScale().multThis(5f);
     	
     	rootNode.attach(cameraNode);
     	rootNode.attach(light);
@@ -112,8 +109,9 @@ public class Alw3d extends Activity{
     	Set<Node> simNodes = new HashSet<Node>();
     	simNodes.add(rootNode);
     	simulator = new Alw3dSimulator(simNodes);
-    	simulator.setSimulation(new Alw3dSimulation(500));
+    	simulator.setSimulation(new Alw3dSimulation(50));
     	model.setSimulator(simulator);
+    	Thread.yield();
     	simulator.start();
     }
 }
