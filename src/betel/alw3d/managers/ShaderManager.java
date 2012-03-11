@@ -27,6 +27,7 @@ public class ShaderManager {
 			return 0;
 	}
 	
+	// TODO: Binaries? Better validation?
 	private boolean tryToUpload(ShaderProgram shaderProgram) {
 		if(shaderProgramHandles.containsKey(shaderProgram))
 			return true;
@@ -91,6 +92,10 @@ public class ShaderManager {
 		}*/
 		
 		return true;
+	}
+
+	public void reset() {
+		shaderProgramHandles.clear();
 	}
 
 }

@@ -3,6 +3,7 @@ package betel.alw3d.managers;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import betel.alw3d.renderer.Geometry.Attribute;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,18 +12,27 @@ import java.util.List;
 import java.util.Map;
 
 import android.opengl.GLES20;
+import android.util.Log;
 import static fix.android.opengl.GLES20.glVertexAttribPointer;
+import betel.alw3d.Alw3d;
+import betel.alw3d.renderer.GroupGeometry;
 import betel.alw3d.renderer.Geometry;
 import betel.alw3d.renderer.Geometry.Type;
+import betel.alw3d.renderer.UpdatableGeometry;
 
 public class GeometryManager {
 
 	//final private RendererMode rendererMode;
 
-	private int indexVBOHandle;
-	private int dataVBOHandle;
+	private int indexVBOHandle = 0;
+	private int dataVBOHandle = 0;
 	private int indexOffset = 0;
 	private int dataOffset = 0;
+	
+	// Used for GroupGeometries
+	private int groupIndexVBOHandle = 0;
+	private int groupIndexOffset = 0;
+	private int groupDataOffset = 0;
 	
 	// Direct buffer for communication with OpenGL
 	IntBuffer handleBuffer = ByteBuffer.allocateDirect(8).asIntBuffer();
@@ -69,7 +79,7 @@ public class GeometryManager {
 				null, GLES20.GL_STATIC_DRAW);
 
 		/* TODO:
-		 * Add new buffer objects dynamically and change these sizez back to
+		 * Add new buffer objects dynamically and change these sizes back to
 		 * 1 MiB and 4 MiB.
 		 * 
 		 *  Add a Set or Map of VBOs.
@@ -178,11 +188,130 @@ public class GeometryManager {
 		else
 			return 0;
 	}*/
+	
+	/*final private void uploadGeometry(UpdatableGeometry geometry) {
+		GeometryInfo geometryInfo = new GeometryInfo();
+		AttributeInfo positions = new AttributeInfo();
+		// Is this the first group geometry?
+		if(geometry instanceof GroupGeometry && groupIndexVBOHandle == 0) {
+			// Create the special index VBO
+			GLES20.glGenBuffers(1, handleBuffer);
+			groupIndexVBOHandle = handleBuffer.get(0);
+						
+			GLES20.glBindBuffer(
+					GLES20.GL_ELEMENT_ARRAY_BUFFER,
+					groupIndexVBOHandle);
+			GLES20.glBufferData(
+					GLES20.GL_ELEMENT_ARRAY_BUFFER, 4 * 1024 * 1024,
+					null, GLES20.GL_STATIC_DRAW);
+			
+			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, dataVBOHandle);
+			GLES20.glBufferSubData(
+					GLES20.GL_ARRAY_BUFFER,
+					dataOffset, ((FloatBuffer) GroupGeometry.getPositions().buffer).capacity()*4,
+					(FloatBuffer) GroupGeometry.getPositions().buffer);
+			groupDataOffset = dataOffset;
+			dataOffset += GroupGeometry.getPositions().buffer.capacity() * 4;
+			
+			GLES20.glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0,
+					3, Type.FLOAT.getType(), false,
+					0, dataOffset);
 
-	private boolean tryToUpload(Geometry geometry) {
-		if (geometryInfos.containsKey(geometry))
+		}
+		
+		
+		// TODO: this is specific for GroupGeometry. Make it handle general UpdatableGeometries and handle GroupGeometry as a special case.
+		Attribute at = GroupGeometry.getPositions();
+		
+		positions.name = at.name;
+		positions.type = at.type;
+		positions.size = at.size;
+		positions.normalized = at.normalized;
+		positions.dataOffset = groupDataOffset;
+		
+		geometryInfo.indexVBO = indexVBOHandle;
+		geometryInfo.dataVBO = dataVBOHandle;
+		geometryInfo.count = geometry.getIndexCount();
+		geometryInfo.attributeInfos = new ArrayList<AttributeInfo>();
+		geometryInfo.attributeInfos.add(positions);
+		
+		// This one is new so we put it at the end
+		geometryInfo.indexOffset = groupIndexOffset;
+		int size = GroupGeometry.getSize();
+		groupIndexOffset += size * size * 6 * 4;
+		
+		geometryInfos.put(geometry, geometryInfo);
+		
+		updateGeometryIndices(geometry);
+	}*/
+	
+	final private void updateGeometryIndices(UpdatableGeometry geometry) {
+		GeometryInfo geometryInfo = geometryInfos.get(geometry);
+
+		synchronized(geometry) {
+			geometryInfo.count = geometry.getIndexCount();
+			
+			GLES20.glBindBuffer(
+					GLES20.GL_ELEMENT_ARRAY_BUFFER,
+					geometryInfo.indexVBO);
+			// Upload index data to the index VBO
+			GLES20.glBufferSubData(GLES20.GL_ELEMENT_ARRAY_BUFFER,
+					geometryInfo.indexOffset, geometryInfo.count*4, geometry.getIndices());
+			
+			geometry.needsUpdate = false;
+		}
+			
+		Log.w(Alw3d.LOG_TAG, "Updating indexes: " + geometryInfo.count);
+	}
+
+	/* TODO: Give Geometries or UpdatableGeometries the ability
+	 * to share one buffer but not an other.
+	 */
+	
+	final private boolean tryToUpload(Geometry geometry) {
+		/*if (geometry instanceof GroupGeometry) {
+			if (!((GroupGeometry)geometry).needsUpdate) {
+				if (geometryInfos.containsKey(geometry))
+					// Nothing to do.
+					return true;
+				else {
+					uploadGeometry((GroupGeometry)geometry);
+					return true;
+				}
+			}
+			else {
+				// GroupGeometry needs update
+				if (geometryInfos.containsKey(geometry)) {
+					// Already existing
+					updateGeometryIndices((GroupGeometry)geometry);
+					return true;
+				}				
+				else {
+					// First upload
+					uploadGeometry((GroupGeometry)geometry);
+					return true;
+				}
+			}
+		}*/
+		
+		if (geometryInfos.containsKey(geometry)) {
+			if(geometry instanceof UpdatableGeometry) {
+				if( ((UpdatableGeometry)geometry).needsUpdate ) {
+					updateGeometryIndices(((UpdatableGeometry)geometry));
+				}
+			}
 			return true;
+		}
 		else {
+			
+			int count;
+			if(geometry instanceof UpdatableGeometry)
+				count = ((UpdatableGeometry)geometry).getIndexCount();
+			else
+				count = geometry.getIndexCount();
+			Log.w(Alw3d.LOG_TAG, "Count: " + count);
+			
 			GeometryInfo geometryInfo = new GeometryInfo();
 
 			// Can't use VAO
@@ -197,13 +326,20 @@ public class GeometryManager {
 
 			// Upload index data to the index VBO
 			GLES20.glBufferSubData(GLES20.GL_ELEMENT_ARRAY_BUFFER,
-					indexOffset, geometry.getIndices().capacity()*4, geometry.getIndices());
+					indexOffset, count*4, geometry.getIndices());
+			
+			Log.w(Alw3d.LOG_TAG, "indexOffset: " + indexOffset);
 
 			// Set and update the index VBO offset
 			geometryInfo.indexOffset = indexOffset;
-			indexOffset += geometry.getIndices().capacity() * 4;
+			if(geometry instanceof UpdatableGeometry)
+				indexOffset += ((UpdatableGeometry)geometry).getMaxCount()*4;
+			else
+				indexOffset += count*4;
+			
+			Log.w(Alw3d.LOG_TAG, "indexOffset changed to  " + indexOffset);
 
-			geometryInfo.count = geometry.getIndices().capacity();
+			geometryInfo.count = count;
 
 			geometryInfo.attributeInfos = new LinkedList<AttributeInfo>();
 
@@ -241,6 +377,8 @@ public class GeometryManager {
 				attributeInfo.dataOffset = dataOffset;
 				attributeInfo.name = geometryAttribute.name;
 				geometryInfo.attributeInfos.add(attributeInfo);
+				
+				Log.w(Alw3d.LOG_TAG, "dataOffset: " + dataOffset);
 
 
 				// Bind the attribute to the VAO
@@ -280,6 +418,7 @@ public class GeometryManager {
 
 				// Update the data VBO offset
 				dataOffset += geometryAttribute.buffer.capacity() * 4;
+				Log.w(Alw3d.LOG_TAG, "dataOffset changed to: " + dataOffset);
 				
 			}
 
@@ -300,5 +439,18 @@ public class GeometryManager {
 
 	public void register(Geometry geometry /* TODO: hints */) {
 
+	}
+
+	public void reset() {
+		indexVBOHandle = 0;
+		dataVBOHandle = 0;
+		indexOffset = 0;
+		dataOffset = 0;
+		
+		groupIndexVBOHandle = 0;
+		groupIndexOffset = 0;
+		groupDataOffset = 0;
+		
+		geometryInfos.clear();
 	}
 }

@@ -5,6 +5,8 @@ import java.util.Set;
 
 import betel.alw3d.math.Transform;
 
+// TODO: extend with new class DirectNode, that "ignores" transform.
+
 public class Node {
 	private Node parent = null;
 	private Set<Node> children = new HashSet<Node>();

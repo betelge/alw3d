@@ -5,7 +5,7 @@ import java.util.List;
 
 import betel.alw3d.renderer.passes.RenderPass;
 
-public class Model {
+public class Alw3dModel {
 	private int width, height;
 	
 	List<RenderPass> renderPasses;

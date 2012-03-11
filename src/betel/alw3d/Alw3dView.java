@@ -5,12 +5,12 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
 
-public class View extends GLSurfaceView {
+public class Alw3dView extends GLSurfaceView {
 	
-	Model model;
+	Alw3dModel model;
 	Alw3dRenderer renderer;
 
-	public View(Context context, Model model) {
+	public Alw3dView(Context context, Alw3dModel model) {
 		super(context);
 		this.model = model;
 		
@@ -26,5 +26,14 @@ public class View extends GLSurfaceView {
 			Thread.sleep(1);
 		} catch (InterruptedException e) {} // Not a problem*/
 		return super.onTouchEvent(event);
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		
+		// Let renderer know that the OpenGL context is lost.
+		// It later will upload new data as needed.
+		renderer.forgetOpenGLContext();
 	}
 }

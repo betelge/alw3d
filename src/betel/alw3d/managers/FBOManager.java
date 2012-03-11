@@ -119,4 +119,8 @@ public class FBOManager {
 		}
 		return (fboStatus == GLES20.GL_FRAMEBUFFER_COMPLETE);
 	}
+
+	public void reset() {
+		FBOHandles.clear();
+	}
 }

@@ -64,4 +64,8 @@ public class TextureManager {
 		return true;
 	}
 
+	public void reset() {
+		textureHandles.clear();
+	}
+
 }

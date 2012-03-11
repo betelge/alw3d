@@ -44,4 +44,8 @@ public class RenderBufferManager {
 		return true;
 	}
 
+	public void reset() {
+		renderBufferHandles.clear();
+	}
+
 }
