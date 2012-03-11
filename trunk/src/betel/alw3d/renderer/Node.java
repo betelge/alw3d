@@ -28,7 +28,7 @@ public class Node {
 	}
 	
 	public Transform getAbsoluteTransform(){
-		if(parent.getParent() != null) // Check is parent is root. Ignores root transform.
+		if(parent.getParent() != null) // Check if parent is root. Ignores root transform.
 			return parent.getAbsoluteTransform().mult(getTransform());
 		else
 			return getTransform();

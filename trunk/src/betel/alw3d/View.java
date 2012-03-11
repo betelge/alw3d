@@ -22,6 +22,9 @@ public class View extends GLSurfaceView {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		// TODO Auto-generated method stub
+		/*try {
+			Thread.sleep(1);
+		} catch (InterruptedException e) {} // Not a problem*/
 		return super.onTouchEvent(event);
 	}
 }

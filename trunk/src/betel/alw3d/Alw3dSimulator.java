@@ -74,6 +74,7 @@ public class Alw3dSimulator {
 		long newTime = System.nanoTime();
 		timeAccumulator += newTime - time;
 		time = newTime;
+	//	Log.d(Alw3d.LOG_TAG, "Simaccum: " + timeAccumulator);
 
 		if (simulation != null && simState == SimState.RUN) {
 			// TODO: check if the sim runs slow
@@ -85,12 +86,14 @@ public class Alw3dSimulator {
 				
 				simulation.setTime(simTime);
 				simulation.setRealTime(time - timeAccumulator);
+			//	Log.d(Alw3d.LOG_TAG, "Sim time: " + (time - timeAccumulator));
 
 				simulation.beforeProcessingNodes();
 
-				Iterator<Node> it = nodes.iterator();
-				while (it.hasNext()) {
-					Node node = it.next();
+				//Iterator<Node> it = nodes.iterator();
+				//while (it.hasNext()) {
+				for(Node node : nodes) {
+					//Node node = it.next();
 					simulation.preProcessNode(node);
 					simulation.processNode(node);
 				}

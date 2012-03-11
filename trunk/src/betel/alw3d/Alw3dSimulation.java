@@ -30,7 +30,7 @@ public class Alw3dSimulation {
 		// Empty. Can be overridden.
 	}
 
-	protected void preProcessNode(Node next) {
+	protected void preProcessNode(Node node) {
 		// Empty. Can be overridden.
 	}
 
