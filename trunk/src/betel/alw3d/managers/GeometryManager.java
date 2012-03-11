@@ -21,6 +21,8 @@ import betel.alw3d.renderer.UpdatableGeometry;
 public class GeometryManager {
 
 	//final private RendererMode rendererMode;
+	
+	private boolean isGeometryManagerInitialized = false;
 
 	private int indexVBOHandle = 0;
 	private int dataVBOHandle = 0;
@@ -144,7 +146,10 @@ public class GeometryManager {
 		List<Geometry.Attribute> lat = new ArrayList<Geometry.Attribute>();
 		lat.add(at);
 		lat.add(at2);
-		Geometry.QUAD = new Geometry(indices, lat);
+		Geometry.QUAD.setIndices(indices);
+		Geometry.QUAD.setAttributes(lat);
+		
+		isGeometryManagerInitialized = true;
 	}
 
 	@Override
@@ -172,6 +177,8 @@ public class GeometryManager {
 	}
 
 	final public GeometryInfo getGeometryInfo(Geometry geometry) {
+		while(!isGeometryManagerInitialized) Thread.yield();
+				
 		if (geometry == null)
 			geometry = Geometry.QUAD;
 		if (tryToUpload(geometry))
@@ -268,6 +275,9 @@ public class GeometryManager {
 	 */
 	
 	final private boolean tryToUpload(Geometry geometry) {
+		
+		while(!isGeometryManagerInitialized) Thread.yield();
+		
 		/*if (geometry instanceof GroupGeometry) {
 			if (!((GroupGeometry)geometry).needsUpdate) {
 				if (geometryInfos.containsKey(geometry))
@@ -356,13 +366,13 @@ public class GeometryManager {
 				case UBYTE:
 					GLES20.glBufferSubData(
 							GLES20.GL_ARRAY_BUFFER,
-							dataOffset, ((ByteBuffer) geometryAttribute.buffer).capacity(),
+							dataOffset, ((ByteBuffer) geometryAttribute.buffer).limit(),
 							(ByteBuffer) geometryAttribute.buffer);
 					break;
 				case FLOAT:
 					GLES20.glBufferSubData(
 							GLES20.GL_ARRAY_BUFFER,
-							dataOffset, ((FloatBuffer) geometryAttribute.buffer).capacity()*4,
+							dataOffset, ((FloatBuffer) geometryAttribute.buffer).limit()*4,
 							(FloatBuffer) geometryAttribute.buffer);
 					break;
 				}
@@ -415,7 +425,7 @@ public class GeometryManager {
 				i++;
 
 				// Update the data VBO offset
-				dataOffset += geometryAttribute.buffer.capacity() * 4;
+				dataOffset += geometryAttribute.buffer.limit() * 4;
 				Log.w(Alw3d.LOG_TAG, "dataOffset changed to: " + dataOffset);
 				
 			}
