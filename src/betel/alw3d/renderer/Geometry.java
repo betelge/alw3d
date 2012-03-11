@@ -7,7 +7,7 @@ import java.util.List;
 import android.opengl.GLES20;
 
 public class Geometry {
-	static public Geometry QUAD;
+	static public Geometry QUAD = new Geometry(null, null);
 		
 	private IntBuffer indices;
 	private List<Attribute> attributes;
@@ -81,6 +81,6 @@ public class Geometry {
 	}
 
 	public int getIndexCount() {
-		return indices.capacity();
+		return indices.limit();
 	}
 }
