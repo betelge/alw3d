@@ -178,8 +178,10 @@ public class Alw3dSimulation {
 			}
 		}*/
 		
-		for( Node child : node.getChildren() )
-			processNode(child);
+		synchronized(node) {
+			for( Node child : node.getChildren() )
+				processNode(child);
+		}
 	}
 
 	public void setRealTime(long realTime) {

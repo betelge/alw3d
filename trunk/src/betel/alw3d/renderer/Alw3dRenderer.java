@@ -497,8 +497,10 @@ public class Alw3dRenderer implements Renderer{
 		
 		
 		if(!node.getChildren().isEmpty()) {
-			for(Node child : node.getChildren()) {
-				ProcessNode(child, px, py, pz, rx, ry, rz, rw);
+			synchronized(node) {
+				for(Node child : node.getChildren()) {
+					ProcessNode(child, px, py, pz, rx, ry, rz, rw);
+				}
 			}
 		}
 	}
