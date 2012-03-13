@@ -44,7 +44,9 @@ public class Node {
 	}
 
 	public void detachFromParent() {
-		parent.children.remove(this);
+		synchronized (parent) {
+			parent.children.remove(this);
+		}
 		parent = null;
 	}
 
