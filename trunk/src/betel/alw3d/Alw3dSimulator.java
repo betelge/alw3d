@@ -28,6 +28,8 @@ public class Alw3dSimulator {
 	public enum SimState {
 		STOP, RUN, PAUSE, EXIT;
 	}
+	
+	private Alw3dOnSimulationListener onSimulationListener = null;
 
 	/*Thread simulatorThread;
 	private Runnable simulatorRunnable = new Runnable() {
@@ -88,6 +90,8 @@ public class Alw3dSimulator {
 				simulation.setRealTime(time - timeAccumulator);
 			//	Log.d(Alw3d.LOG_TAG, "Sim time: " + (time - timeAccumulator));
 
+				if(onSimulationListener != null)
+					onSimulationListener.onSimulationTick(time - timeAccumulator);
 				simulation.beforeProcessingNodes();
 
 				//Iterator<Node> it = nodes.iterator();
@@ -101,6 +105,14 @@ public class Alw3dSimulator {
 				simTime += timeStep;
 			}
 		}
+	}
+
+	public Alw3dOnSimulationListener getOnSimulationListener() {
+		return onSimulationListener;
+	}
+
+	public void setOnSimulationListener(Alw3dOnSimulationListener onSimulationListener) {
+		this.onSimulationListener = onSimulationListener;
 	}
 	
 }
