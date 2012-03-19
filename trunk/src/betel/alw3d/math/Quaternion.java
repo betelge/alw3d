@@ -82,10 +82,10 @@ public class Quaternion
 		return result;
 	}
 
-	// TODO: Is this always correct?
+	// TODO: Fix this shit! Java::new is the enemy. Keep it thread safe!
 	public void mult(Vector3f vector, Vector3f result)
 	{
-		result.x =
+	/*	result.x =
 				(1 - 2*y*y - 2*z*z) * vector.x
 				+ 2*(y*x - z*w) * vector.y
 				+ 2*(z*x + y*w) * vector.z;
@@ -96,9 +96,10 @@ public class Quaternion
 		result.z =
 				2*(x*z - w*y) * vector.x
 				+ 2*(y*z + w*x) * vector.y
-				+ (1 - 2*x*x - y*y) * vector.z;
+				+ (1 - 2*x*x - y*y) * vector.z;*/
 		
-		/*Vector3f vn = new Vector3f(vector);
+		Vector3f vn = new Vector3f(vector);
+		float length = vector.getLength();
 		vn.normalizeThis();
 		Quaternion vecQuat = new Quaternion(vn.x, vn.y, vn.z, 0f);
 		
@@ -108,7 +109,8 @@ public class Quaternion
 		result.x = resQuat.x;
 		result.y = resQuat.y;
 		result.z = resQuat.z;
-		result.multThis(vector.getLength());*/
+		result.normalizeThis();
+		result.multThis(length);
 	}
 
 	public Quaternion inverse()
