@@ -3,13 +3,16 @@ package betel.alw3d.renderer;
 import java.util.HashSet;
 import java.util.Set;
 
+import betel.alw3d.Volume;
 import betel.alw3d.math.Transform;
 
 // TODO: extend with new class DirectNode, that "ignores" transform.
 
 public class Node {
-	private Node parent = null;
+	protected Node parent = null;
 	private Set<Node> children = new HashSet<Node>();
+	
+	private Volume volume = null;
 
 	private Transform transform;
 
@@ -44,10 +47,33 @@ public class Node {
 	}
 
 	public void detachFromParent() {
-		synchronized (parent) {
-			parent.children.remove(this);
+		if(parent != null) {
+			synchronized (parent) {
+				parent.children.remove(this);
+			}
 		}
 		parent = null;
+	}
+	
+	public void setVolume(Volume volume) {
+		
+		if(volume.parent != null)
+			volume.parent.volume = null;
+		
+		if(this.volume != null)
+			this.volume.parent = null;
+		
+		this.volume = volume;
+		volume.parent = this;
+	}
+	
+	public void detachVolume() {
+		volume.parent = null;
+		volume = null;
+	}
+	
+	public Volume getVolume() {
+		return volume;
 	}
 
 	public Set<Node> getChildren() {

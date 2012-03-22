@@ -170,6 +170,7 @@ public class Transform {
 	}
 	
 	private static float[] m = new float[16];
+	// TODO: add isModified and use it
 	public void toMatrix4(FloatBuffer buf) {
 		this.toMatrix4(m);
 		buf.clear();
