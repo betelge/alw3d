@@ -83,21 +83,17 @@ public class Alw3dSimulator {
 			long timeStep = simulation.getTimeStep();
 			if (timeAccumulator >= timeStep) {
 				timeAccumulator -= timeStep;
-				
-				//Log.d(Alw3d.LOG_TAG, "SimTick: " + tick++);
-				
+								
 				simulation.setTime(simTime);
 				simulation.setRealTime(time - timeAccumulator);
-			//	Log.d(Alw3d.LOG_TAG, "Sim time: " + (time - timeAccumulator));
 
 				if(onSimulationListener != null)
 					onSimulationListener.onSimulationTick(time - timeAccumulator);
 				simulation.beforeProcessingNodes();
 
-				//Iterator<Node> it = nodes.iterator();
-				//while (it.hasNext()) {
 				for(Node node : nodes) {
-					//Node node = it.next();
+					// TODO: Give array of nodes instead so that the nodes have to be iterated over just once.
+					// TODO: Parallel instead of serial. Provide hook up.
 					simulation.preProcessNode(node);
 					simulation.processNode(node);
 				}

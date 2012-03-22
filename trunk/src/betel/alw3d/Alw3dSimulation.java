@@ -178,6 +178,8 @@ public class Alw3dSimulation {
 			}
 		}*/
 		
+		
+		// TODO: Do the iteration beforehand.
 		synchronized(node) {
 			for( Node child : node.getChildren() )
 				processNode(child);

@@ -200,11 +200,11 @@ public class Vector3f
 		return vector;
 	}
 
-	public float getDistance(Vector3f vector)
+	public float getDistance(Vector3f fromVector)
 	{
-		float dx = x - vector.x;
-		float dy = y - vector.y;
-		float dz = z - vector.z;
+		float dx = x - fromVector.x;
+		float dy = y - fromVector.y;
+		float dz = z - fromVector.z;
 
 		return (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
 	}
