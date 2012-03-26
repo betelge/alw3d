@@ -4,7 +4,7 @@ import betel.alw3d.math.Vector3f;
 
 public class SphereVolume extends Volume {
 	
-	float radius = 0;
+	private float radius = 0;
 	
 	public SphereVolume(float radius) {
 		this.radius = radius;
@@ -52,4 +52,7 @@ public class SphereVolume extends Volume {
 		else return false;
 	}
 
+	public float getRadius() {
+		return radius;
+	}
 }
