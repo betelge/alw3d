@@ -472,7 +472,7 @@ public class Alw3dRenderer implements Renderer{
 				backRenderTransforms.add(new Transform());
 			Transform trans = backRenderTransforms.get(index);
 			trans.set(cameraTransform);
-			trans.mult(currentTransform);
+			trans.multThis(currentTransform);
 		}
 
 		// TODO: Handle multiple lights
