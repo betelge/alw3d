@@ -15,6 +15,16 @@ public class Node {
 	private Volume volume = null;
 
 	private Transform transform;
+	
+	private Transform cachedAbsoluteTransform = new Transform();
+	/* TODO: Add isModified to check if cachedAbsoluteTransform
+		needs to be updated.
+		When isModified is set to true it should be passed down
+		to the children.
+		When cachedAbsoluteTransform is updated isModified should
+		be set to false.
+	*/
+	// private boolean isModified = true;
 
 	public Node() {
 		this(new Transform());
@@ -33,8 +43,12 @@ public class Node {
 	}
 	
 	public Transform getAbsoluteTransform(){
-		if(parent != null && parent.parent != null) // Check if self or parent is root. Ignores root transform.
-			return parent.getAbsoluteTransform().mult(getTransform());
+		// Check if self or parent is root. Ignores root transform.
+		if(parent != null && parent.parent != null) {
+			cachedAbsoluteTransform.set(parent.getAbsoluteTransform());
+			cachedAbsoluteTransform.multThis(getTransform());
+			return cachedAbsoluteTransform;
+		}
 		else
 			return getTransform();
 	}
