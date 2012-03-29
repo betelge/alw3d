@@ -83,17 +83,15 @@ public class Quaternion
 	}
 
 	// TODO: Not thread safe, but probably not alone.
-	float[] qm = new float[9];
+	private float[] qm = new float[9];
 	public void mult(Vector3f vector, Vector3f result)
-	{
-		// TODO: Maybe the quaternion isn't normalized?
-		
+	{		
 		toMatrix3(qm);
-		result.x =
+		float tempx =
 			qm[0] * vector.x +
 			qm[3] * vector.y +
 			qm[6] * vector.z;
-		result.y =
+		float tempy =
 			qm[1] * vector.x +
 			qm[4] * vector.y +
 			qm[7] * vector.z;
@@ -101,33 +99,8 @@ public class Quaternion
 			qm[2] * vector.x +
 			qm[5] * vector.y +
 			qm[8] * vector.z;
-		
-	/*	result.x =
-				(1 - 2*y*y - 2*z*z) * vector.x
-				+ 2*(y*x - z*w) * vector.y
-				+ 2*(z*x + y*w) * vector.z;
-		result.y =
-				2*(x*y - w*z) * vector.x
-				+ (1 - 2*x*x - 2*z*z) * vector.y
-				+ 2*(z*y - 2*x*w) * vector.z;
-		result.z =
-				2*(x*z - w*y) * vector.x
-				+ 2*(y*z + w*x) * vector.y
-				+ (1 - 2*x*x - y*y) * vector.z;*/
-		
-		/*Vector3f vn = new Vector3f(vector);
-		float length = vector.getLength();
-		vn.normalizeThis();
-		Quaternion vecQuat = new Quaternion(vn.x, vn.y, vn.z, 0f);
-		
-		Quaternion resQuat = vecQuat.mult(this.conjugate());
-		resQuat = this.mult(resQuat);
-		
-		result.x = resQuat.x;
-		result.y = resQuat.y;
-		result.z = resQuat.z;
-		result.normalizeThis();
-		result.multThis(length);*/
+		result.x = tempx;
+		result.y = tempy;
 	}
 
 	public Quaternion inverse()
