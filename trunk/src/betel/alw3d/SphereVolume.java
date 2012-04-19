@@ -12,6 +12,8 @@ public class SphereVolume extends Volume {
 	
 	@Override
 	public boolean isCollidedWith(Volume volume) {
+		if (volume == null)
+			return false;
 		
 		// TODO: Take scaling into account.
 		
@@ -54,5 +56,9 @@ public class SphereVolume extends Volume {
 
 	public float getRadius() {
 		return radius;
+	}
+	
+	public void setRadius(float radius) {
+		this.radius = radius;
 	}
 }
