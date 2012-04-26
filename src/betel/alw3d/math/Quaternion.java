@@ -3,6 +3,7 @@ package betel.alw3d.math;
 
 import java.nio.FloatBuffer;
 
+import android.util.FloatMath;
 
 public class Quaternion
 {
@@ -148,7 +149,7 @@ public class Quaternion
 				axis.set(Vector3f.UNIT_X);
 				return 0;
 			}
-			factor = 1 / (float) Math.sqrt(factor);
+			factor = 1 / FloatMath.sqrt(factor);
 			axis.x = factor * x;
 			axis.y = factor * y;
 			axis.z = factor * z;
@@ -164,11 +165,11 @@ public class Quaternion
 
 	public Quaternion fromAngleNormalAxis(float angle, Vector3f axis)
 	{
-		float sin = (float) Math.sin(0.5 * angle);
+		float sin = FloatMath.sin(0.5f * angle);
 		x = sin * axis.x;
 		y = sin * axis.y;
 		z = sin * axis.z;
-		w = (float) Math.cos(0.5 * angle);
+		w = FloatMath.cos(0.5f * angle);
 
 		return this;
 	}
@@ -208,10 +209,10 @@ public class Quaternion
 		{
 			float halfAngle = (float) Math.acos(cosHalfAngle);
 			float sinHalfAngle =
-					(float) Math.sqrt(1.0 - cosHalfAngle * cosHalfAngle);
+					FloatMath.sqrt(1f - cosHalfAngle * cosHalfAngle);
 
-			scale1 = (float) Math.sin(scale1 * halfAngle) / sinHalfAngle;
-			scale2 = (float) Math.sin(scale2 * halfAngle) / sinHalfAngle;
+			scale1 = FloatMath.sin(scale1 * halfAngle) / sinHalfAngle;
+			scale2 = FloatMath.sin(scale2 * halfAngle) / sinHalfAngle;
 		}
 
 		result.set(scale1 * q1.x + scale2 * q3.x,
@@ -263,7 +264,7 @@ public class Quaternion
 
 	public void normalizeThis()
 	{
-		float inverseNorm = 1f / (float) Math.sqrt(getNorm());
+		float inverseNorm = 1f / FloatMath.sqrt(getNorm());
 		x *= inverseNorm;
 		y *= inverseNorm;
 		z *= inverseNorm;
