@@ -1,6 +1,7 @@
 
 package betel.alw3d.math;
 
+import android.util.FloatMath;
 
 public class Vector3f
 {
@@ -206,12 +207,12 @@ public class Vector3f
 		float dy = y - fromVector.y;
 		float dz = z - fromVector.z;
 
-		return (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+		return FloatMath.sqrt(dx * dx + dy * dy + dz * dz);
 	}
 
 	public float getLength()
 	{
-		return (float) Math.sqrt(x * x + y * y + z * z);
+		return FloatMath.sqrt(x * x + y * y + z * z);
 	}
 
 	public float getLengthSquared()

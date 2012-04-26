@@ -1,5 +1,6 @@
 package betel.alw3d.renderer;
 
+import android.util.FloatMath;
 import betel.alw3d.FrustumVolume;
 import betel.alw3d.math.Vector3f;
 
@@ -21,11 +22,11 @@ public class CameraNode extends MovableNode {
 		float rfov = fov * (float)Math.PI/180;
 		
 		// Top
-		normals[0] = new Vector3f(0f, -(float)Math.cos(rfov/2), -(float)Math.sin(rfov/2));
+		normals[0] = new Vector3f(0f, -FloatMath.cos(rfov/2), -FloatMath.sin(rfov/2));
 		distances[0] = 0;
 		
 		// Bottom
-		normals[1] = new Vector3f(0f, (float)Math.cos(-rfov/2), (float)Math.sin(-rfov/2));
+		normals[1] = new Vector3f(0f, FloatMath.cos(-rfov/2), FloatMath.sin(-rfov/2));
 		distances[1] = 0;
 		
 		// Near
@@ -38,14 +39,14 @@ public class CameraNode extends MovableNode {
 		
 		// Horizontal fov in radians
 		// TODO: aspect is unknown here
-		float hfov = 2*(float)Math.cos(/*aspect*/Math.acos(rfov/2) / 2);
+		float hfov = 2*FloatMath.cos(/*aspect*/(float)Math.acos(rfov/2) / 2);
 		
 		// Left
-		normals[4] = new Vector3f((float)Math.cos(hfov/2), 0f,-(float)Math.sin(hfov/2));
+		normals[4] = new Vector3f(FloatMath.cos(hfov/2), 0f,-FloatMath.sin(hfov/2));
 		distances[4] = 0;
 		
 		// Right
-		normals[5] = new Vector3f(-(float)Math.cos(-hfov/2), 0f,(float)Math.sin(-hfov/2));
+		normals[5] = new Vector3f(-FloatMath.cos(-hfov/2), 0f,FloatMath.sin(-hfov/2));
 		distances[5] = 0;
 		
 		return new FrustumVolume(normals, distances);
