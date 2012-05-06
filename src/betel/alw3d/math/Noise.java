@@ -2,6 +2,8 @@ package betel.alw3d.math;
 
 import java.util.Random;
 
+import betel.alw3d.procedurals.Procedural;
+
 public class Noise implements Procedural{
 
 	// Gradients

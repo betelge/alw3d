@@ -1,7 +1,6 @@
 package betel.alw3d.procedurals;
 
 import betel.alw3d.math.Noise;
-import betel.alw3d.math.Procedural;
 import betel.alw3d.math.Vector3f;
 
 
