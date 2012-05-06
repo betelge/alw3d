@@ -1,4 +1,6 @@
-package betel.alw3d.math;
+package betel.alw3d.procedurals;
+
+import betel.alw3d.math.Vector3f;
 
 public interface Procedural {
 	public double getValue(double x, double y, double z, double resolution);
