@@ -19,19 +19,19 @@ public class fBm implements Procedural {
 
 	@Override
 	public double getValueNormal(double x, double y, double z,
-			double resolution, Vector3f normal) {
+			double resolution, Vector3f gradient) {
 		if(maxOctaves < 1f/resolution)
 			resolution = 1f/maxOctaves;
 		
-		normal.set(0, 0, 0);
+		gradient.set(0, 0, 0);
 		
-		Vector3f normalAcc = new Vector3f();
+		Vector3f gradientAcc = new Vector3f();
 		
 		float value = 0;
 		
 		for(int i = 1; i < 1f/resolution; i *= 2) {
-			value += 1f/i * noise.getValueNormal(i*x, i*y, i*z, resolution, normalAcc);
-			normal.addMultThis(normalAcc, 1f/i);
+			value += 1f/i * noise.getValueNormal(i*x, i*y, i*z, resolution, gradientAcc);
+			gradient.addMultThis(gradientAcc, 1f/i);
 		}
 		
 		return value;

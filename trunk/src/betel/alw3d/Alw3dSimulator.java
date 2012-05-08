@@ -14,6 +14,11 @@ public class Alw3dSimulator {
 
 	private long time;
 	private long timeAccumulator = 0;
+	
+	// Compensate for paused time
+	private long timeOffset = 0;
+	private long timeOfPauseStart = 0;
+	
 
 	// Time passed to the simulation. Doesn't increase while the sim is paused.
 	private long simTime = 0;
@@ -63,6 +68,20 @@ public class Alw3dSimulator {
 		time = System.nanoTime();
 		simState = SimState.RUN;
 	}
+	
+	public void pause() {
+		Log.d(Alw3d.LOG_TAG, "Pausing Simulator.");
+		timeOfPauseStart = System.nanoTime();
+		simState = SimState.PAUSE;
+	}
+	
+	public void resume() {
+		if(simState == SimState.PAUSE) {
+			timeOffset += System.nanoTime() - timeOfPauseStart;
+			Log.d(Alw3d.LOG_TAG, "Resuming Simulator; timeOffset = " + timeOffset);
+			simState = SimState.RUN;
+		}
+	}
 
 	public void exit() {
 		simState = SimState.EXIT;
@@ -73,19 +92,18 @@ public class Alw3dSimulator {
 	}
 
 	public void steps() {
-		long newTime = System.nanoTime();
-		timeAccumulator += newTime - time;
-		time = newTime;
-	//	Log.d(Alw3d.LOG_TAG, "Simaccum: " + timeAccumulator);
-
 		if (simulation != null && simState == SimState.RUN) {
+			long newTime = System.nanoTime() - timeOffset;
+			timeAccumulator += newTime - time;
+			time = newTime;
+			
 			// TODO: check if the sim runs slow
 			long timeStep = simulation.getTimeStep();
-			if (timeAccumulator >= timeStep) {
+			while (timeAccumulator >= timeStep) {
 				timeAccumulator -= timeStep;
 								
 				simulation.setTime(simTime);
-				simulation.setRealTime(time - timeAccumulator);
+				simulation.setRealTime(time - timeAccumulator + timeOffset); // Add back timeOffset to give View real time.
 
 				if(onSimulationListener != null)
 					onSimulationListener.onSimulationTick(time - timeAccumulator);

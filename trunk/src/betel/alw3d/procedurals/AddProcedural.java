@@ -25,19 +25,18 @@ public class AddProcedural implements Procedural {
 
 	@Override
 	public double getValueNormal(double x, double y, double z,
-			double resolution, Vector3f normal) {
+			double resolution, Vector3f gradient) {
 		
-		float value1 = (float) procedural1.getValueNormal(x, y, z, resolution, normal);
+		float value1 = (float) procedural1.getValueNormal(x, y, z, resolution, gradient);
 		
-		float nx = normal.x;
-		float ny = normal.y;
-		float nz = normal.z;
+		float nx = gradient.x;
+		float ny = gradient.y;
+		float nz = gradient.z;
 		
-		float value2 = (float) procedural2.getValueNormal(x, y, z, resolution, normal);
+		float value2 = (float) procedural2.getValueNormal(x, y, z, resolution, gradient);
 		
-		normal.multThis(weight2);
-		normal.addMultThis(nx, ny, nz, weight1);
-		normal.normalizeThis();
+		gradient.multThis(weight2);
+		gradient.addMultThis(nx, ny, nz, weight1);
 		
 		return weight1*value1 + weight2*value2;
 	}
