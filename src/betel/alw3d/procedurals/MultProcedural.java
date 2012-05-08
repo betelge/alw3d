@@ -18,19 +18,18 @@ public class MultProcedural implements Procedural {
 
 	@Override
 	public double getValueNormal(double x, double y, double z,
-			double resolution, Vector3f normal) {
+			double resolution, Vector3f gradient) {
 		
-		float value1 = (float) procedural1.getValueNormal(x, y, z, resolution, normal);
+		float value1 = (float) procedural1.getValueNormal(x, y, z, resolution, gradient);
 		
-		float nx = normal.x;
-		float ny = normal.y;
-		float nz = normal.z;
+		float nx = gradient.x;
+		float ny = gradient.y;
+		float nz = gradient.z;
 		
-		float value2 = (float) procedural2.getValueNormal(x, y, z, resolution, normal);
+		float value2 = (float) procedural2.getValueNormal(x, y, z, resolution, gradient);
 		
-		normal.multThis(value1);
-		normal.addMultThis(nx, ny, nz, value2);
-		normal.normalizeThis();
+		gradient.multThis(value1);
+		gradient.addMultThis(nx, ny, nz, value2);
 		
 		return value1 * value2;
 	}

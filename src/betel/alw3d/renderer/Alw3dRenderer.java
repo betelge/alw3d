@@ -37,9 +37,6 @@ public class Alw3dRenderer implements Renderer{
 	
 	private Alw3dModel model;
 	
-	// TODO: temp
-	private long lastTime = 0;
-	
 	GeometryManager geometryManager;
 	ShaderManager shaderManager;
 	TextureManager textureManager;
@@ -228,7 +225,6 @@ public class Alw3dRenderer implements Renderer{
 				cameraNode.getFov(), cameraNode.getzNear(), cameraNode.getzFar());
 		
 		time = System.nanoTime();
-		//Log.d(Alw3d.LOG_TAG, "renderTime: " + time);
 
 		ProcessNode(rootNode, 0,0,0, 0,0,0,1);
 
@@ -563,40 +559,22 @@ public class Alw3dRenderer implements Renderer{
 		}
 	}
 	
-	private float lastRenderTime = 0;
-	private float lastSimTime = 0;
+	
+	// TODO: Is this stil needed?
+	//private float lastRenderTime = 0;
+	//private float lastSimTime = 0;
 
 	@Override
 	public void onDrawFrame(GL10 arg0) {
-		
-		//System.gc();
-		
-		// TODO: temp
-		long time = System.nanoTime();
-		
-		/*float dt = (time - lastTime)/(float)1000000;
-		
-		if( dt > 30) {
-			Log.d(Alw3d.LOG_TAG, "Total: " + dt + " Sim: " + lastSimTime + " Rend: " + lastRenderTime);
-		}*/
-		
-		lastRenderTime = (time - lastTime)/(float)1000000;
-		lastTime = time;
 			
 		Alw3dSimulator simulator = model.getSimulator();
 		if(simulator != null)
 			simulator.steps();
-			
-		long simt = System.nanoTime();
-		lastSimTime = (simt - lastTime)/(float)1000000;
-
 		
 		List<RenderPass> renderPasses = model.getRenderPasses();
 		//synchronized (renderPasses) {
 			processRenderPasses(renderPasses);
 		//}
-			
-		lastRenderTime = (System.nanoTime() - simt)/(float)1000000;
 	}
 
 	@Override
