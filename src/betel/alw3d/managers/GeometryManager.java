@@ -393,10 +393,10 @@ public class GeometryManager {
 				// TODO: Use a get to get the right index from OpenGL?
 				//if (rendererMode == RendererMode.SHADERS) {
 					GLES20.glEnableVertexAttribArray(i);
-					glVertexAttribPointer(i,
+					GLES20.glVertexAttribPointer(i,
 							geometryAttribute.size, geometryAttribute.type
 									.getType(), geometryAttribute.normalized,
-							0, dataOffset);
+							0, dataOffset); // This one used to be a JNI workaround
 
 				/*} else {
 					if (geometryAttribute.name.equals("position")) {
