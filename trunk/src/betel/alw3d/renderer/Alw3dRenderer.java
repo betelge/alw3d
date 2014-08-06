@@ -170,7 +170,7 @@ public class Alw3dRenderer implements Renderer{
 		// Bind vertex attributes to uniform names
 		bindAttributes(geometryInfo.attributeInfos, shaderProgram);
 		// Draw
-		glDrawElements(GLES20.GL_TRIANGLES, geometryInfo.count,
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geometryInfo.count,
 				GLES20.GL_UNSIGNED_INT, geometryInfo.indexOffset);
 
 		if (fbo != null) {
@@ -201,10 +201,10 @@ public class Alw3dRenderer implements Renderer{
 			// TODO: Use a get to get the right index from OpenGL?
 			int index = GLES20.glGetAttribLocation(shaderProgram, attributeInfo.name);
 			GLES20.glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index,
+			GLES20.glVertexAttribPointer(index,
 					attributeInfo.size, attributeInfo.type
 					.getType(), attributeInfo.normalized,
-					0, attributeInfo.dataOffset);
+					0, attributeInfo.dataOffset); // This call used to be in a JNI workaround
 			
 			//Log.w(Alw3d.LOG_TAG, "Binding dataOffset: " + attributeInfo.dataOffset);
 		}
@@ -379,7 +379,7 @@ public class Alw3dRenderer implements Renderer{
 				bindAttributes(geometryInfo.attributeInfos, shaderProgramHandle);
 	
 			// Draw
-			glDrawElements(geometry.getPrimitiveType().getValue(), geometryInfo.count,
+			GLES20.glDrawElements(geometry.getPrimitiveType().getValue(), geometryInfo.count,
 					GLES20.GL_UNSIGNED_INT, geometryInfo.indexOffset);
 			//Log.w(Alw3d.LOG_TAG, "Rendering with indexOffset: " + geometryInfo.indexOffset + "  and count: " + geometryInfo.count);
 	
