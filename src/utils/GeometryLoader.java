@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +27,7 @@ public class GeometryLoader {
 		ArrayList<Vector3f> vt = new ArrayList<Vector3f>();
 		ArrayList<Vector3f> vn = new ArrayList<Vector3f>();
 
-		ArrayList<Integer> indices = new ArrayList<Integer>();
+		ArrayList<Short> indices = new ArrayList<Short>();
 		ArrayList<Float> v2 = new ArrayList<Float>();
 		ArrayList<Float> vt2 = new ArrayList<Float>();
 		ArrayList<Float> vn2 = new ArrayList<Float>();
@@ -62,11 +62,12 @@ public class GeometryLoader {
 						// Is this the 4:th vertex of a quad?
 						if (j == 4) {
 							// Create an extra triangle
-							indices.add(v2.size() / 3);
-							indices.add(v2.size() / 3 - 3);
-							indices.add(v2.size() / 3 - 1);
+							// TODO: Check for short overflow?
+							indices.add((short) (v2.size() / 3));
+							indices.add((short) (v2.size() / 3 - 3));
+							indices.add((short) (v2.size() / 3 - 1));
 						} else
-							indices.add(v2.size() / 3);
+							indices.add((short) (v2.size() / 3));
 
 						Vector3f vec;
 						if (!v.isEmpty()) {
@@ -99,8 +100,8 @@ public class GeometryLoader {
 		}
 
 		List<Attribute> attributes = new ArrayList<Attribute>();
-		IntBuffer indexBuffer = IntBuffer.allocate(indices.size());
-		Iterator<Integer> intIt = indices.iterator();
+		ShortBuffer indexBuffer = ShortBuffer.allocate(indices.size());
+		Iterator<Short> intIt = indices.iterator();
 		while (intIt.hasNext())
 			indexBuffer.put(intIt.next());
 		indexBuffer.flip();

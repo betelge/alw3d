@@ -3,6 +3,7 @@ package betel.alw3d.managers;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,7 +13,6 @@ import java.util.Map;
 
 import android.opengl.GLES20;
 import android.util.Log;
-import static fix.android.opengl.GLES20.glVertexAttribPointer;
 import betel.alw3d.Alw3d;
 import betel.alw3d.renderer.Geometry;
 import betel.alw3d.renderer.Geometry.Type;
@@ -94,13 +94,13 @@ public class GeometryManager {
 				GLES20.GL_STATIC_DRAW);
 
 		// Initialize the QUAD
-		IntBuffer indices = ByteBuffer.allocateDirect(6*8).asIntBuffer();
-		indices.put(0);
-		indices.put(1);
-		indices.put(2);
-		indices.put(2);
-		indices.put(3);
-		indices.put(0);
+		ShortBuffer indices = ByteBuffer.allocateDirect(6*8).asShortBuffer();
+		indices.put((short) 0);
+		indices.put((short) 1);
+		indices.put((short) 2);
+		indices.put((short) 2);
+		indices.put((short) 3);
+		indices.put((short) 0);
 		indices.flip();
 		
 		Geometry.Attribute at = new Geometry.Attribute();
@@ -177,7 +177,7 @@ public class GeometryManager {
 	}
 
 	final public GeometryInfo getGeometryInfo(Geometry geometry) {
-		while(!isGeometryManagerInitialized) Thread.yield();
+		while(!isGeometryManagerInitialized) Thread.yield(); //Huh?
 				
 		if (geometry == null)
 			geometry = Geometry.QUAD;
@@ -262,7 +262,7 @@ public class GeometryManager {
 					geometryInfo.indexVBO);
 			// Upload index data to the index VBO
 			GLES20.glBufferSubData(GLES20.GL_ELEMENT_ARRAY_BUFFER,
-					geometryInfo.indexOffset, geometryInfo.count*4, geometry.getIndices());
+					geometryInfo.indexOffset, geometryInfo.count*2, geometry.getIndices());
 			
 			geometry.needsUpdate = false;
 		}
@@ -334,16 +334,16 @@ public class GeometryManager {
 			
 			// Upload index data to the index VBO
 			GLES20.glBufferSubData(GLES20.GL_ELEMENT_ARRAY_BUFFER,
-					indexOffset, count*4, geometry.getIndices());
+					indexOffset, count*2, geometry.getIndices());
 			
 			Log.w(Alw3d.LOG_TAG, "indexOffset: " + indexOffset);
 
 			// Set and update the index VBO offset
 			geometryInfo.indexOffset = indexOffset;
 			if(geometry instanceof UpdatableGeometry)
-				indexOffset += ((UpdatableGeometry)geometry).getMaxCount()*4;
+				indexOffset += ((UpdatableGeometry)geometry).getMaxCount()*2;
 			else
-				indexOffset += count*4;
+				indexOffset += count*2;
 			
 			Log.w(Alw3d.LOG_TAG, "indexOffset changed to  " + indexOffset);
 
