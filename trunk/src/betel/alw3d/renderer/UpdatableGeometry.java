@@ -1,6 +1,6 @@
 package betel.alw3d.renderer;
 
-import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.List;
 
 import android.util.Log;
@@ -13,12 +13,12 @@ public abstract class UpdatableGeometry extends Geometry {
 	// Actual count of indexes
 	private int count;
 	
-	public UpdatableGeometry(PrimitiveType primitiveType, IntBuffer indices,
+	public UpdatableGeometry(PrimitiveType primitiveType, ShortBuffer indices,
 			List<Attribute> attributes) {
 		super(primitiveType, indices, attributes);
 	}
 	
-	public UpdatableGeometry(IntBuffer indices,
+	public UpdatableGeometry(ShortBuffer indices,
 			List<Attribute> attributes) {
 		super(indices, attributes);
 	}

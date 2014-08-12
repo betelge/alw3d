@@ -1,6 +1,6 @@
 package betel.alw3d.renderer;
 
-import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.List;
 
 public class GroupGeometry extends UpdatableGeometry {
@@ -14,10 +14,10 @@ public class GroupGeometry extends UpdatableGeometry {
 	private int count;
 	
 	public GroupGeometry() {
-		super(IntBuffer.allocate(size*size*6), null);
+		super(ShortBuffer.allocate(size*size*6), null);
 	}
 
-	public GroupGeometry(IntBuffer indices, List<Attribute> attributes) {
+	public GroupGeometry(ShortBuffer indices, List<Attribute> attributes) {
 		super(indices, attributes);
 	}
 

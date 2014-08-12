@@ -1,8 +1,5 @@
 package betel.alw3d.renderer;
 
-import static fix.android.opengl.GLES20.glVertexAttribPointer;
-import static fix.android.opengl.GLES20.glDrawElements;
-
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -171,7 +168,7 @@ public class Alw3dRenderer implements Renderer{
 		bindAttributes(geometryInfo.attributeInfos, shaderProgram);
 		// Draw
 		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geometryInfo.count,
-				GLES20.GL_UNSIGNED_INT, geometryInfo.indexOffset);
+				GLES20.GL_UNSIGNED_SHORT, geometryInfo.indexOffset);
 
 		if (fbo != null) {
 			bindFBO(null);
@@ -200,13 +197,17 @@ public class Alw3dRenderer implements Renderer{
 			
 			// TODO: Use a get to get the right index from OpenGL?
 			int index = GLES20.glGetAttribLocation(shaderProgram, attributeInfo.name);
-			GLES20.glEnableVertexAttribArray(index);
-			GLES20.glVertexAttribPointer(index,
-					attributeInfo.size, attributeInfo.type
-					.getType(), attributeInfo.normalized,
-					0, attributeInfo.dataOffset); // This call used to be in a JNI workaround
-			
-			//Log.w(Alw3d.LOG_TAG, "Binding dataOffset: " + attributeInfo.dataOffset);
+			// Ignore unused attributes
+			// TODO: Print warnings.
+			if(index != -1) {
+				GLES20.glEnableVertexAttribArray(index);
+				GLES20.glVertexAttribPointer(index,
+						attributeInfo.size, attributeInfo.type
+						.getType(), attributeInfo.normalized,
+						0, attributeInfo.dataOffset); // This call used to be in a JNI workaround
+				
+				//Log.w(Alw3d.LOG_TAG, "Binding dataOffset: " + attributeInfo.dataOffset);
+			}
 		}
 		
 	}
@@ -380,7 +381,7 @@ public class Alw3dRenderer implements Renderer{
 	
 			// Draw
 			GLES20.glDrawElements(geometry.getPrimitiveType().getValue(), geometryInfo.count,
-					GLES20.GL_UNSIGNED_INT, geometryInfo.indexOffset);
+					GLES20.GL_UNSIGNED_SHORT, geometryInfo.indexOffset);
 			//Log.w(Alw3d.LOG_TAG, "Rendering with indexOffset: " + geometryInfo.indexOffset + "  and count: " + geometryInfo.count);
 	
 			oldGeometry = geometry;
@@ -575,6 +576,13 @@ public class Alw3dRenderer implements Renderer{
 		//synchronized (renderPasses) {
 			processRenderPasses(renderPasses);
 		//}
+			
+		// Debug
+		/*	int error;
+	        while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
+	            Log.e(Alw3d.LOG_TAG, "Check: glError " + error);
+	            throw new RuntimeException("Check: glError " + error);
+	        };*/
 	}
 
 	@Override

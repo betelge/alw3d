@@ -1,7 +1,7 @@
 package betel.alw3d.renderer;
 
 import java.nio.Buffer;
-import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.List;
 
 import android.opengl.GLES20;
@@ -9,7 +9,7 @@ import android.opengl.GLES20;
 public class Geometry {
 	static public Geometry QUAD = new Geometry(null, null);
 		
-	private IntBuffer indices;
+	private ShortBuffer indices;
 	private List<Attribute> attributes;
 	public enum PrimitiveType {
 		POINTS(GLES20.GL_POINTS), LINES(GLES20.GL_LINES), LINE_STRIP(GLES20.GL_LINE_STRIP),
@@ -50,21 +50,21 @@ public class Geometry {
 		public boolean normalized = false;
 	}
 	
-	public Geometry(PrimitiveType primitiveType, IntBuffer indices, List<Attribute> attributes) {
+	public Geometry(PrimitiveType primitiveType, ShortBuffer indices, List<Attribute> attributes) {
 		this.primitiveType = primitiveType;
 		this.indices = indices;
 		this.attributes = attributes;
 	}
 	
-	public Geometry(IntBuffer indices, List<Attribute> attributes) {
+	public Geometry(ShortBuffer indices, List<Attribute> attributes) {
 		this(PrimitiveType.TRIANGLES, indices, attributes);
 	}
 		
-	public IntBuffer getIndices() {
+	public ShortBuffer getIndices() {
 		return indices;
 	}
 	
-	public void setIndices(IntBuffer indices) {
+	public void setIndices(ShortBuffer indices) {
 		this.indices = indices;
 	}
 	
