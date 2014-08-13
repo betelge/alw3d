@@ -25,6 +25,7 @@ import betel.alw3d.managers.GeometryManager.GeometryInfo;
 import betel.alw3d.math.Quaternion;
 import betel.alw3d.math.Transform;
 import betel.alw3d.math.Vector3f;
+import betel.alw3d.renderer.passes.CheckGlErrorPass;
 import betel.alw3d.renderer.passes.ClearPass;
 import betel.alw3d.renderer.passes.RenderPass;
 import betel.alw3d.renderer.passes.SceneRenderPass;
@@ -576,13 +577,6 @@ public class Alw3dRenderer implements Renderer{
 		//synchronized (renderPasses) {
 			processRenderPasses(renderPasses);
 		//}
-			
-		// Debug
-		/*	int error;
-	        while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
-	            Log.e(Alw3d.LOG_TAG, "Check: glError " + error);
-	            throw new RuntimeException("Check: glError " + error);
-	        };*/
 	}
 
 	@Override
@@ -637,9 +631,21 @@ public class Alw3dRenderer implements Renderer{
 			else if(renderPass instanceof RenderMultiPass) {
 				processRenderPasses(((RenderMultiPass) renderPass).getRenderPasses());
 			}
+			else if(renderPass instanceof CheckGlErrorPass) {
+				checkGlError(((CheckGlErrorPass)renderPass).isCauseException());
+			}
 		}
 	}
 	
+	private void checkGlError(boolean causeException) {
+		int error;
+		while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
+			Log.e(Alw3d.LOG_TAG, "Check: glError " + error);
+			if(causeException)
+				throw new RuntimeException("Check: glError " + error);
+		}
+	}
+
 	public void forgetOpenGLContext() {
 		geometryManager.reset();
 		shaderManager.reset();

@@ -34,8 +34,8 @@ public class GeometryManager {
 	private int groupIndexOffset = 0;
 	private int groupDataOffset = 0;*/
 	
-	// Direct buffer for communication with OpenGL
-	IntBuffer handleBuffer = ByteBuffer.allocateDirect(8).asIntBuffer();
+	// Buffer for communication with OpenGL
+	IntBuffer handleBuffer = IntBuffer.allocate(2);
 
 	public class GeometryInfo {
 		// Can't use VAO
@@ -94,7 +94,7 @@ public class GeometryManager {
 				GLES20.GL_STATIC_DRAW);
 
 		// Initialize the QUAD
-		ShortBuffer indices = ByteBuffer.allocateDirect(6*8).asShortBuffer();
+		ShortBuffer indices = ShortBuffer.allocate(6);
 		indices.put((short) 0);
 		indices.put((short) 1);
 		indices.put((short) 2);
@@ -107,7 +107,7 @@ public class GeometryManager {
 		at.name = "position";
 		at.size = 3;
 		at.type = Geometry.Type.FLOAT;
-		at.buffer = ByteBuffer.allocateDirect(3*4*16).asFloatBuffer();
+		at.buffer = FloatBuffer.allocate(3*4);
 		((FloatBuffer) at.buffer).put(-1);
 		((FloatBuffer) at.buffer).put(-1);
 		((FloatBuffer) at.buffer).put(0);
@@ -129,7 +129,7 @@ public class GeometryManager {
 		at2.name = "textureCoord";
 		at2.size = 2;
 		at2.type = Geometry.Type.FLOAT;
-		at2.buffer = ByteBuffer.allocateDirect(2*4*16).asFloatBuffer();
+		at2.buffer = FloatBuffer.allocate(2*4);
 		((FloatBuffer) at2.buffer).put(0);
 		((FloatBuffer) at2.buffer).put(0);
 
@@ -155,7 +155,7 @@ public class GeometryManager {
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
-		IntBuffer buffs = ByteBuffer.allocateDirect(2*8).asIntBuffer();
+		IntBuffer buffs = IntBuffer.allocate(2);
 		buffs.put(indexVBOHandle);
 		buffs.put(dataVBOHandle);
 		buffs.flip();
