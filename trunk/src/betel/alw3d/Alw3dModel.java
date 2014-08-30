@@ -21,7 +21,9 @@ public class Alw3dModel {
 	}
 	
 	public void addRenderPass(RenderPass renderPass) {
-		this.renderPasses.add(renderPass);
+		synchronized (renderPasses) {
+			this.renderPasses.add(renderPass);
+		}
 	}
 
 	public void setWidth(int width) {
