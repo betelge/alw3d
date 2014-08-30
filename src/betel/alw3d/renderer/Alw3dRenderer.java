@@ -574,9 +574,7 @@ public class Alw3dRenderer implements Renderer{
 			simulator.steps();
 		
 		List<RenderPass> renderPasses = model.getRenderPasses();
-		//synchronized (renderPasses) {
-			processRenderPasses(renderPasses);
-		//}
+		processRenderPasses(renderPasses);
 	}
 
 	@Override
@@ -597,42 +595,54 @@ public class Alw3dRenderer implements Renderer{
 		
 		// Enable back-faces culling
 		GLES20.glEnable(GLES20.GL_CULL_FACE);
+		
+		int[] range = {666,666};
+		int[] precision = {666};
+		
+		GLES20.glGetShaderPrecisionFormat(GLES20.GL_FRAGMENT_SHADER, GLES20.GL_MEDIUM_FLOAT, range, 0, precision, 0);
+		Log.i(Alw3d.LOG_TAG, "mediump float precision is " + precision[0]);
 	}
 	
 	private void processRenderPasses(List<RenderPass> renderPasses) {
 	//	Iterator<RenderPass> it = renderPasses.iterator();
 	//	while(it.hasNext()) {
-		
-		for(RenderPass renderPass : renderPasses) {
-			
-		//	RenderPass renderPass = it.next();
-			if(renderPass instanceof SetPass) {
-				setState(((SetPass) renderPass).getState(),
-						((SetPass) renderPass).isSet());
-			}
-			else if(renderPass instanceof ClearPass) {
-				clear(((ClearPass) renderPass).getBufferBits(),
-						renderPass.getFbo());
-			}
-			else if(renderPass instanceof SceneRenderPass) {
-				synchronized (((SceneRenderPass) renderPass).getRootNode()) {
-				renderScene/*NonOpenGL*/(
-						((SceneRenderPass) renderPass).getRootNode(),
-						((SceneRenderPass) renderPass).getCameraNode(),
-						renderPass.getFbo(),
-						((SceneRenderPass) renderPass).getOverrideMaterial());
+		synchronized (renderPasses) {
+	
+			for(RenderPass renderPass : renderPasses) {
+				
+				if(renderPass.isSilent()) continue;
+				
+			//	RenderPass renderPass = it.next();
+				if(renderPass instanceof SetPass) {
+					setState(((SetPass) renderPass).getState(),
+							((SetPass) renderPass).isSet());
 				}
-			}
-			else if(renderPass instanceof QuadRenderPass) {
-				renderQuad(
-						((QuadRenderPass) renderPass).getMaterial(),
-						renderPass.getFbo());
-			}
-			else if(renderPass instanceof RenderMultiPass) {
-				processRenderPasses(((RenderMultiPass) renderPass).getRenderPasses());
-			}
-			else if(renderPass instanceof CheckGlErrorPass) {
-				checkGlError(((CheckGlErrorPass)renderPass).isCauseException());
+				else if(renderPass instanceof ClearPass) {
+					clear(((ClearPass) renderPass).getBufferBits(),
+							renderPass.getFbo());
+				}
+				else if(renderPass instanceof SceneRenderPass) {
+					synchronized (((SceneRenderPass) renderPass).getRootNode()) {
+					renderScene/*NonOpenGL*/(
+							((SceneRenderPass) renderPass).getRootNode(),
+							((SceneRenderPass) renderPass).getCameraNode(),
+							renderPass.getFbo(),
+							((SceneRenderPass) renderPass).getOverrideMaterial());
+					}
+				}
+				else if(renderPass instanceof QuadRenderPass) {
+					renderQuad(
+							((QuadRenderPass) renderPass).getMaterial(),
+							renderPass.getFbo());
+				}
+				else if(renderPass instanceof RenderMultiPass) {
+					processRenderPasses(((RenderMultiPass) renderPass).getRenderPasses());
+				}
+				else if(renderPass instanceof CheckGlErrorPass) {
+					checkGlError(((CheckGlErrorPass)renderPass).isCauseException());
+				}
+				
+				if(renderPass.isOneTime()) renderPass.setSilent(true);
 			}
 		}
 	}
