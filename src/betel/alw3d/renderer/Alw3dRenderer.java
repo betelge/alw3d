@@ -648,12 +648,12 @@ public class Alw3dRenderer implements Renderer{
 	}
 	
 	private void checkGlError(boolean causeException) {
-		int error;
+		int error = 0;
 		while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
 			Log.e(Alw3d.LOG_TAG, "Check: glError " + error);
-			if(causeException)
-				throw new RuntimeException("Check: glError " + error);
 		}
+		if(causeException && error != 0)
+			throw new RuntimeException("Check: glError " + error);
 	}
 
 	public void forgetOpenGLContext() {
