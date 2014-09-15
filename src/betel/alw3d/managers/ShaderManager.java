@@ -1,8 +1,10 @@
 package betel.alw3d.managers;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import android.opengl.GLES20;
 import android.util.Log;
@@ -13,6 +15,8 @@ import betel.alw3d.renderer.ShaderProgram.Shader;
 public class ShaderManager {
 	
 	Map<ShaderProgram, Integer> shaderProgramHandles = new HashMap<ShaderProgram, Integer>();
+	// Tracks shader handles attached to a shader program handle
+	Map<Integer, Set<Integer>> shaderShaderHandles = new HashMap<Integer, Set<Integer>>();
 	
 	/*final private RendererMode rendererMode;
 	
@@ -33,6 +37,7 @@ public class ShaderManager {
 			return true;
 		
 		int shaderProgramHandle = GLES20.glCreateProgram();
+		Set<Integer> shaderHandles = new HashSet<Integer>();
 		
 		Iterator<ShaderProgram.Shader> it = shaderProgram.getShaders().iterator();
 		while(it.hasNext()) {
@@ -41,7 +46,8 @@ public class ShaderManager {
 				continue;*/
 			
 			int shaderHandle = GLES20.glCreateShader(shader.type.getValue());
-			
+			shaderHandles.add(shaderHandle);
+						
 			/*if(rendererMode == RendererMode.FIXED_VERTEX && shader.source_ff != null)
 				GLES20.glShaderSourceARB(shaderHandle, shader.source_ff);
 			else*/
@@ -73,8 +79,10 @@ public class ShaderManager {
 		GLES20.glGetProgramiv(shaderProgramHandle,
 			GLES20.GL_VALIDATE_STATUS, validStatus, 0);
 		Log.w(Alw3d.LOG_TAG, ((Integer) validStatus[0]).toString());
+		
+		shaderShaderHandles.put(shaderProgramHandle, shaderHandles);
 				
-	//	if(validStatus == GLES20.GL_TRUE)
+	//	if(validStatus[0] == GLES20.GL_TRUE)
 			shaderProgramHandles.put(shaderProgram, shaderProgramHandle);
 	/*	else {
 			/*System.out.println("Source:");
@@ -93,8 +101,21 @@ public class ShaderManager {
 		
 		return true;
 	}
+	
+	public void freeVMEM() {
+		for(ShaderProgram program : shaderProgramHandles.keySet()) {
+			
+			int programHandle = shaderProgramHandles.get(program);
+			for(Integer shaderHandle : shaderShaderHandles.get(programHandle)) {
+				GLES20.glDeleteShader(shaderHandle);
+			}
+			GLES20.glDeleteProgram(programHandle);
+		}
+		reset();
+	}
 
 	public void reset() {
+		shaderShaderHandles.clear();
 		shaderProgramHandles.clear();
 	}
 
