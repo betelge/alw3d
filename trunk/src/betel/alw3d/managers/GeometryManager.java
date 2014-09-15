@@ -69,6 +69,10 @@ public class GeometryManager {
 	public GeometryManager(/*RendererMode rendererMode*/) {
 		//this.rendererMode = rendererMode;
 
+		init();
+	}
+	
+	private void init() {
 		GLES20.glGenBuffers(1, handleBuffer);
 		indexVBOHandle = handleBuffer.get(0);
 		GLES20.glBindBuffer(
@@ -155,11 +159,19 @@ public class GeometryManager {
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
+		freeVMEM();
+	}
+	
+	public void freeVMEM() {
+		isGeometryManagerInitialized = false;
+		
 		IntBuffer buffs = IntBuffer.allocate(2);
 		buffs.put(indexVBOHandle);
 		buffs.put(dataVBOHandle);
 		buffs.flip();
 		GLES20.glDeleteBuffers(buffs.capacity(),buffs);
+		
+		reset();
 	}
 
 	public int getIndexVBOHandle(Geometry geometry) {
@@ -460,5 +472,7 @@ public class GeometryManager {
 		groupDataOffset = 0;*/
 		
 		geometryInfos.clear();
+		
+		init();
 	}
 }

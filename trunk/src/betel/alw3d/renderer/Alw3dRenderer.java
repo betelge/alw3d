@@ -30,6 +30,7 @@ import betel.alw3d.renderer.passes.ClearPass;
 import betel.alw3d.renderer.passes.RenderPass;
 import betel.alw3d.renderer.passes.SceneRenderPass;
 import betel.alw3d.renderer.passes.SetPass;
+import betel.alw3d.renderer.passes.CheckGlErrorPass.OnGlErrorListener;
 
 public class Alw3dRenderer implements Renderer{
 	
@@ -599,8 +600,14 @@ public class Alw3dRenderer implements Renderer{
 		int[] range = {666,666};
 		int[] precision = {666};
 		
+		GLES20.glGetShaderPrecisionFormat(GLES20.GL_FRAGMENT_SHADER, GLES20.GL_HIGH_FLOAT, range, 0, precision, 0);
+		Log.i(Alw3d.LOG_TAG, "highp float fragment precision is " + precision[0]);
 		GLES20.glGetShaderPrecisionFormat(GLES20.GL_FRAGMENT_SHADER, GLES20.GL_MEDIUM_FLOAT, range, 0, precision, 0);
-		Log.i(Alw3d.LOG_TAG, "mediump float precision is " + precision[0]);
+		Log.i(Alw3d.LOG_TAG, "mediump float fragment precision is " + precision[0]);
+		GLES20.glGetShaderPrecisionFormat(GLES20.GL_VERTEX_SHADER, GLES20.GL_HIGH_FLOAT, range, 0, precision, 0);
+		Log.i(Alw3d.LOG_TAG, "highp float vertex precision is " + precision[0]);
+		GLES20.glGetShaderPrecisionFormat(GLES20.GL_VERTEX_SHADER, GLES20.GL_MEDIUM_FLOAT, range, 0, precision, 0);
+		Log.i(Alw3d.LOG_TAG, "mediump float vertex precision is " + precision[0]);
 	}
 	
 	private void processRenderPasses(List<RenderPass> renderPasses) {
@@ -639,7 +646,8 @@ public class Alw3dRenderer implements Renderer{
 					processRenderPasses(((RenderMultiPass) renderPass).getRenderPasses());
 				}
 				else if(renderPass instanceof CheckGlErrorPass) {
-					checkGlError(((CheckGlErrorPass)renderPass).isCauseException());
+					CheckGlErrorPass errPass = (CheckGlErrorPass)renderPass;
+					checkGlError(errPass.isCauseException(), errPass.getOnGlErrorListener());
 				}
 				
 				if(renderPass.isOneTime()) renderPass.setSilent(true);
@@ -647,10 +655,12 @@ public class Alw3dRenderer implements Renderer{
 		}
 	}
 	
-	private void checkGlError(boolean causeException) {
+	private void checkGlError(boolean causeException, OnGlErrorListener errL) {
 		int error = 0;
 		while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
 			Log.e(Alw3d.LOG_TAG, "Check: glError " + error);
+			if(errL != null)
+				errL.onGlError(error);
 		}
 		if(causeException && error != 0)
 			throw new RuntimeException("Check: glError " + error);

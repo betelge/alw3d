@@ -2,6 +2,7 @@ package betel.alw3d.renderer.passes;
 
 public class CheckGlErrorPass extends RenderPass {
 	private boolean causeException;
+	private OnGlErrorListener onGlErrorListener = null;
 
 	public CheckGlErrorPass(boolean causeException) {
 		super();
@@ -12,4 +13,15 @@ public class CheckGlErrorPass extends RenderPass {
 		return causeException;
 	}
 	
+	public OnGlErrorListener getOnGlErrorListener() {
+		return onGlErrorListener;
+	}
+
+	public void setOnGlErrorListener(OnGlErrorListener onGlErrorListener) {
+		this.onGlErrorListener = onGlErrorListener;
+	}
+
+	public static interface OnGlErrorListener {
+		void onGlError(int error);
+	}
 }
