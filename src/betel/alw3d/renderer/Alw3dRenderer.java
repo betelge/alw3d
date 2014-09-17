@@ -28,6 +28,7 @@ import betel.alw3d.math.Vector3f;
 import betel.alw3d.renderer.passes.CheckGlErrorPass;
 import betel.alw3d.renderer.passes.ClearPass;
 import betel.alw3d.renderer.passes.RenderPass;
+import betel.alw3d.renderer.passes.RenderPass.OnRenderPassFinishedListener;
 import betel.alw3d.renderer.passes.SceneRenderPass;
 import betel.alw3d.renderer.passes.SetPass;
 import betel.alw3d.renderer.passes.CheckGlErrorPass.OnGlErrorListener;
@@ -464,14 +465,16 @@ public class Alw3dRenderer implements Renderer{
 		}
 
 		if (node instanceof GeometryNode) {
-			backRenderNodes.add((GeometryNode) node);
-			int index = backRenderNodes.size() - 1;
-			//backRenderTransforms.add(cameraTransform.mult(currentTransform));
-			if(backRenderTransforms.size() <= index)
-				backRenderTransforms.add(new Transform());
-			Transform trans = backRenderTransforms.get(index);
-			trans.set(cameraTransform);
-			trans.multThis(currentTransform);
+			if(((GeometryNode)node).isVisible()) {
+				backRenderNodes.add((GeometryNode) node);
+				int index = backRenderNodes.size() - 1;
+				//backRenderTransforms.add(cameraTransform.mult(currentTransform));
+				if(backRenderTransforms.size() <= index)
+					backRenderTransforms.add(new Transform());
+				Transform trans = backRenderTransforms.get(index);
+				trans.set(cameraTransform);
+				trans.multThis(currentTransform);
+			}
 		}
 
 		// TODO: Handle multiple lights
@@ -651,6 +654,11 @@ public class Alw3dRenderer implements Renderer{
 				}
 				
 				if(renderPass.isOneTime()) renderPass.setSilent(true);
+				
+				OnRenderPassFinishedListener onRenderPassFinishedListener =
+						renderPass.getOnRenderPassFinishedListener();
+				if(onRenderPassFinishedListener != null)
+					onRenderPassFinishedListener.onRenderPassFinished(renderPass);
 			}
 		}
 	}
