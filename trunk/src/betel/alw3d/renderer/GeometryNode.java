@@ -2,8 +2,9 @@ package betel.alw3d.renderer;
 
 public class GeometryNode extends Node {
 	
-	Geometry geometry;
-	Material material;
+	private Geometry geometry;
+	private Material material;
+	private boolean visible = true;
 
 	public GeometryNode(Geometry geometry, Material material) {
 		this.geometry = geometry;
@@ -20,5 +21,13 @@ public class GeometryNode extends Node {
 
 	public Material getMaterial() {
 		return material;
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 }
