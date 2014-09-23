@@ -36,4 +36,9 @@ public class Alw3dView extends GLSurfaceView {
 		// It later will upload new data as needed.
 		renderer.forgetOpenGLContext();
 	}
+	
+	// Tries to load Alw3d objects into memory
+	public void requestPreload(Object obj) {
+		renderer.requestPreload(obj);
+	}
 }
