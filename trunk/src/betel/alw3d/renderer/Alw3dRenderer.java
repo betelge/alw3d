@@ -2,9 +2,12 @@ package betel.alw3d.renderer;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -42,6 +45,9 @@ public class Alw3dRenderer implements Renderer{
 	TextureManager textureManager;
 	RenderBufferManager renderBufferManager;
 	FBOManager fboManager;
+	
+	// Set with resources that are requested to be preloaded
+	Set<Object> preloadSet = new HashSet<Object>();
 
 	// TODO: fix this in a better way
 	// Current camera transform
@@ -586,6 +592,12 @@ public class Alw3dRenderer implements Renderer{
 		GLES20.glViewport(0, 0, w, h);
 		model.setWidth(w);
 		model.setHeight(h);
+		
+		synchronized (preloadSet) {
+			Iterator<Object> it = preloadSet.iterator();
+			while(it.hasNext())
+				preload(it.next());
+		}
 	}
 
 	@Override
@@ -611,6 +623,7 @@ public class Alw3dRenderer implements Renderer{
 		Log.i(Alw3d.LOG_TAG, "highp float vertex precision is " + precision[0]);
 		GLES20.glGetShaderPrecisionFormat(GLES20.GL_VERTEX_SHADER, GLES20.GL_MEDIUM_FLOAT, range, 0, precision, 0);
 		Log.i(Alw3d.LOG_TAG, "mediump float vertex precision is " + precision[0]);
+		
 	}
 	
 	private void processRenderPasses(List<RenderPass> renderPasses) {
@@ -680,5 +693,40 @@ public class Alw3dRenderer implements Renderer{
 		textureManager.reset();
 		renderBufferManager.reset();
 		fboManager.reset();
+	}
+	
+	private boolean preload(Object obj) {
+		if(obj instanceof Geometry)
+			return (geometryManager.getGeometryInfo((Geometry) obj) != null);
+		else if(obj instanceof ShaderProgram)
+			return (shaderManager.getShaderProgramHandle((ShaderProgram) obj) != 0);
+		else if(obj instanceof Texture)
+			return (textureManager.getTextureHandle((Texture) obj) != 0);
+		else if(obj instanceof FBO)
+			return (fboManager.getFBOHandle((FBO) obj) != 0);
+		else if(obj instanceof Material) {
+			for(Entry<String, Texture> texEntry : ((Material)obj).getTextures().entrySet()) {
+				preload(texEntry.getValue());
+			}
+			return preload(((Material)obj).getShaderProgram());
+		}
+		else if(obj instanceof Node) {
+			if(obj instanceof GeometryNode) {
+				preload(((GeometryNode)obj).getGeometry());
+				preload(((GeometryNode)obj).getMaterial());
+			}
+			for( Node node : ((Node)obj).getChildren()) {
+				preload(node);
+			}
+			return false;
+		}
+		else
+			return false;
+	}
+	
+	public void requestPreload(Object obj) {
+		synchronized (preloadSet) {
+			preloadSet.add(obj);
+		}
 	}
 }
