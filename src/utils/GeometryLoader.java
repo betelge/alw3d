@@ -10,12 +10,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import tk.betelge.alw3d.math.Vector3f;
+import tk.betelge.alw3d.renderer.Geometry;
+import tk.betelge.alw3d.renderer.Geometry.Attribute;
+import tk.betelge.alw3d.renderer.Geometry.Type;
+
 
 import android.content.Context;
-import betel.alw3d.math.Vector3f;
-import betel.alw3d.renderer.Geometry;
-import betel.alw3d.renderer.Geometry.Attribute;
-import betel.alw3d.renderer.Geometry.Type;
 
 public class GeometryLoader {
 	

@@ -1,7 +1,7 @@
 package utils;
 
-import betel.alw3d.renderer.ShaderProgram;
-import betel.alw3d.renderer.ShaderProgram.Shader;
+import tk.betelge.alw3d.renderer.ShaderProgram;
+import tk.betelge.alw3d.renderer.ShaderProgram.Shader;
 
 public class ShaderLoader {
 	static public ShaderProgram loadShaderProgram(int vertex, int fragment) {
