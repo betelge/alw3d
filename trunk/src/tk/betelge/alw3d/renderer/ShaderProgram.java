@@ -3,7 +3,7 @@ package tk.betelge.alw3d.renderer;
 import java.util.HashSet;
 import java.util.Set;
 
-import betel.Alw3D.R;
+import tk.betelge.Alw3D.R;
 import android.opengl.GLES20;
 
 import utils.StringLoader;
