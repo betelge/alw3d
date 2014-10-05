@@ -639,6 +639,7 @@ public class Alw3dRenderer implements Renderer{
 	private void processRenderPasses(List<RenderPass> renderPasses) {
 	//	Iterator<RenderPass> it = renderPasses.iterator();
 	//	while(it.hasNext()) {
+		CheckGlErrorPass checkPass = null;
 		synchronized (renderPasses) {
 	
 			for(RenderPass renderPass : renderPasses) {
@@ -672,8 +673,9 @@ public class Alw3dRenderer implements Renderer{
 					processRenderPasses(((RenderMultiPass) renderPass).getRenderPasses());
 				}
 				else if(renderPass instanceof CheckGlErrorPass) {
-					CheckGlErrorPass errPass = (CheckGlErrorPass)renderPass;
-					checkGlError(errPass.isCauseException(), errPass.getOnGlErrorListener());
+					/*CheckGlErrorPass errPass = (CheckGlErrorPass)renderPass;
+					checkGlError(errPass.isCauseException(), errPass.getOnGlErrorListener());*/
+					checkPass = (CheckGlErrorPass) renderPass;
 				}
 				
 				if(renderPass.isOneTime()) renderPass.setSilent(true);
@@ -683,6 +685,10 @@ public class Alw3dRenderer implements Renderer{
 				if(onRenderPassFinishedListener != null)
 					onRenderPassFinishedListener.onRenderPassFinished(renderPass);
 			}
+		}
+		// Do the onGlError call-back outside of the synchronized block 
+		if(checkPass != null) {
+			checkGlError(checkPass.isCauseException(), checkPass.getOnGlErrorListener());
 		}
 	}
 	
