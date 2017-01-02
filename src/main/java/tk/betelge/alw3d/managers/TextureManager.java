@@ -58,8 +58,10 @@ public class TextureManager {
 		}
 		
 		// Generate mipmaps (TODO: Take it easy with mipmaping on android?)
-		GLES20.glGenerateMipmap(
-				texture.getTextureType().getValue());
+		Texture.Filter filter = texture.getFilter();
+		if(filter != Texture.Filter.LINEAR && filter != Texture.Filter.NEAREST)
+			GLES20.glGenerateMipmap(
+					texture.getTextureType().getValue());
 
 		textureHandles.put(texture, textureHandle);
 		return true;

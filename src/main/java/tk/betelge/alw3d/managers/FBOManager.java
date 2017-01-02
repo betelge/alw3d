@@ -89,9 +89,12 @@ public class FBOManager {
 	public void generateMipmaps(FBO fbo) {
 		for (int i = 0; i < fbo.getAttachables().length && i <= 15; i++) {
 			if (fbo.getAttachables()[i] instanceof Texture) {
+				Texture tex = (Texture) fbo.getAttachables()[i];
 				GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureManager
-						.getTextureHandle((Texture) fbo.getAttachables()[i]));
-				GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
+						.getTextureHandle(tex));
+				Texture.Filter filter = tex.getFilter();
+				if(filter != Texture.Filter.LINEAR && filter != Texture.Filter.NEAREST)
+					GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
 			}
 			if (fbo.getAttachables()[i] instanceof RenderBuffer)
 				GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, renderBufferManager
