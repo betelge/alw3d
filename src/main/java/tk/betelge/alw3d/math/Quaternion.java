@@ -3,8 +3,6 @@ package tk.betelge.alw3d.math;
 
 import java.nio.FloatBuffer;
 
-import android.util.FloatMath;
-
 public class Quaternion
 {
 	public float x, y, z, w;
@@ -149,7 +147,7 @@ public class Quaternion
 				axis.set(Vector3f.UNIT_X);
 				return 0;
 			}
-			factor = 1 / FloatMath.sqrt(factor);
+			factor = 1 / (float) Math.sqrt(factor);
 			axis.x = factor * x;
 			axis.y = factor * y;
 			axis.z = factor * z;
@@ -165,11 +163,11 @@ public class Quaternion
 
 	public Quaternion fromAngleNormalAxis(float angle, Vector3f axis)
 	{
-		float sin = FloatMath.sin(0.5f * angle);
+		float sin = (float) Math.sin(0.5f * angle);
 		x = sin * axis.x;
 		y = sin * axis.y;
 		z = sin * axis.z;
-		w = FloatMath.cos(0.5f * angle);
+		w = (float) Math.cos(0.5f * angle);
 
 		return this;
 	}
@@ -209,10 +207,10 @@ public class Quaternion
 		{
 			float halfAngle = (float) Math.acos(cosHalfAngle);
 			float sinHalfAngle =
-					FloatMath.sqrt(1f - cosHalfAngle * cosHalfAngle);
+					(float) Math.sqrt(1f - cosHalfAngle * cosHalfAngle);
 
-			scale1 = FloatMath.sin(scale1 * halfAngle) / sinHalfAngle;
-			scale2 = FloatMath.sin(scale2 * halfAngle) / sinHalfAngle;
+			scale1 = (float) Math.sin(scale1 * halfAngle) / sinHalfAngle;
+			scale2 = (float) Math.sin(scale2 * halfAngle) / sinHalfAngle;
 		}
 
 		result.set(scale1 * q1.x + scale2 * q3.x,
@@ -264,7 +262,7 @@ public class Quaternion
 
 	public void normalizeThis()
 	{
-		float inverseNorm = 1f / FloatMath.sqrt(getNorm());
+		float inverseNorm = 1f / (float) Math.sqrt(getNorm());
 		x *= inverseNorm;
 		y *= inverseNorm;
 		z *= inverseNorm;
