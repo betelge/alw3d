@@ -9,6 +9,10 @@ public class ClearPass extends RenderPass {
 	public final static int STENCIL_BUFFER_BIT = GLES20.GL_STENCIL_BUFFER_BIT;
 	
 	private int bufferBits;
+
+	public ClearPass(int bufferBits) {
+		this(bufferBits, null);
+	}
 	
 	public ClearPass(int bufferBits, FBO fbo) {
 		this.setBufferBits(bufferBits);

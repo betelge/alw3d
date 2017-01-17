@@ -11,15 +11,15 @@ import utils.StringLoader;
 public class ShaderProgram {
 	
 	// TODO: NullPointerException
-	static public ShaderProgram DEFAULT = null;//new ShaderProgram(Shader.DEFAULT_VERTEX, Shader.DEFAULT_FRAGMENT);
+	static public ShaderProgram DEFAULT = new ShaderProgram(Shader.DEFAULT_VERTEX, Shader.DEFAULT_FRAGMENT);
 
 	static public class Shader {
 		
-		static public Shader DEFAULT_VERTEX = null;
-			//new Shader(Type.VERTEX, StringLoader.loadStringExceptionless(R.raw.default_v));
+		static public Shader DEFAULT_VERTEX =
+				new Shader(Type.VERTEX, StringLoader.loadStringExceptionless(R.raw.default_v));
 		
-		static public Shader DEFAULT_FRAGMENT = null;
-			//new Shader(Type.FRAGMENT, StringLoader.loadStringExceptionless(R.raw.default_f));
+		static public Shader DEFAULT_FRAGMENT =
+				new Shader(Type.FRAGMENT, StringLoader.loadStringExceptionless(R.raw.default_f));
 		
 		final public String source;
 		final public Type type;

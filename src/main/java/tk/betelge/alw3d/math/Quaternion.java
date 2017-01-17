@@ -220,6 +220,7 @@ public class Quaternion
 		return result;
 	}
 
+	// TODO: There is a bug here! up direction gets inverted when UNIT_Z
 	public void lookAt(Vector3f direction, Vector3f up)
 	{
 		set(0, 0, 0, 1);
