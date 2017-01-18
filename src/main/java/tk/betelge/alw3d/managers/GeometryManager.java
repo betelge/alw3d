@@ -1,5 +1,6 @@
 package tk.betelge.alw3d.managers;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -262,10 +263,10 @@ public class GeometryManager {
 		
 		geometryInfos.put(geometry, geometryInfo);
 		
-		updateGeometryIndices(geometry);
+		updateGeometry(geometry);
 	}*/
 	
-	final private void updateGeometryIndices(UpdatableGeometry geometry) {
+	final private void updateGeometry(UpdatableGeometry geometry) {
 		GeometryInfo geometryInfo = geometryInfos.get(geometry);
 
 		synchronized(geometry) {
@@ -277,11 +278,34 @@ public class GeometryManager {
 			// Upload index data to the index VBO
 			GLES20.glBufferSubData(GLES20.GL_ELEMENT_ARRAY_BUFFER,
 					geometryInfo.indexOffset, geometryInfo.count*2, geometry.getIndices());
+
+			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geometryInfo.dataVBO);
+
+			int attCount = geometry.getAttributes().size();
+			for(int i = 0; i < attCount; i++) {
+				AttributeInfo attInfo = geometryInfo.attributeInfos.get(i);
+				Buffer buffer = geometry.getAttributes().get(i).buffer;
+
+				switch (attInfo.type) {
+					case BYTE:
+					case UBYTE:
+						GLES20.glBufferSubData(
+								GLES20.GL_ARRAY_BUFFER,
+								attInfo.dataOffset, ((ByteBuffer) buffer).limit(),
+								(ByteBuffer) buffer);
+						break;
+					case FLOAT:
+						GLES20.glBufferSubData(
+								GLES20.GL_ARRAY_BUFFER,
+								attInfo.dataOffset, ((FloatBuffer) buffer).limit()*4,
+								(FloatBuffer) buffer);
+						break;
+				}
+			}
 			
 			geometry.needsUpdate = false;
 		}
 			
-		Log.w(Alw3d.LOG_TAG, "Updating indexes: " + geometryInfo.count);
 	}
 
 	/* TODO: Give Geometries or UpdatableGeometries the ability
@@ -306,7 +330,7 @@ public class GeometryManager {
 				// GroupGeometry needs update
 				if (geometryInfos.containsKey(geometry)) {
 					// Already existing
-					updateGeometryIndices((GroupGeometry)geometry);
+					updateGeometry((GroupGeometry)geometry);
 					return true;
 				}				
 				else {
@@ -320,7 +344,7 @@ public class GeometryManager {
 		if (geometryInfos.containsKey(geometry)) {
 			if(geometry instanceof UpdatableGeometry) {
 				if( ((UpdatableGeometry)geometry).needsUpdate ) {
-					updateGeometryIndices(((UpdatableGeometry)geometry));
+					updateGeometry(((UpdatableGeometry)geometry));
 				}
 			}
 			return true;
@@ -328,8 +352,10 @@ public class GeometryManager {
 		else {
 			
 			int count;
-			if(geometry instanceof UpdatableGeometry)
-				count = ((UpdatableGeometry)geometry).getIndexCount();
+			if(geometry instanceof UpdatableGeometry) {
+				count = ((UpdatableGeometry) geometry).getIndexCount();
+				((UpdatableGeometry)geometry).needsUpdate = false;
+			}
 			else
 				count = geometry.getIndexCount();
 			Log.w(Alw3d.LOG_TAG, "Count: " + count);
