@@ -39,7 +39,7 @@ public abstract class UpdatableGeometry extends Geometry {
 	abstract public int getMaxCount();
 
 	public void setCount(int count) {
-		Log.w(Alw3d.LOG_TAG, "Count set to: " + count);
+		//Log.d(Alw3d.LOG_TAG, "Count set to: " + count);
 		this.count = count;
 	}
 

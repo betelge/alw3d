@@ -228,8 +228,8 @@ public class Alw3dRenderer implements Renderer{
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geometryInfo.indexVBO);
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geometryInfo.dataVBO);
 		
-		//Log.w(Alw3d.LOG_TAG, "Binding indexVBO: " + geometryInfo.indexVBO);
-		//Log.w(Alw3d.LOG_TAG, "Binding dataVBO: " + geometryInfo.dataVBO);
+		//Log.d(Alw3d.LOG_TAG, "Binding indexVBO: " + geometryInfo.indexVBO);
+		//Log.d(Alw3d.LOG_TAG, "Binding dataVBO: " + geometryInfo.dataVBO);
 	}
 	
 	private void bindAttributes(List<AttributeInfo> attributeInfos, int shaderProgram) {	
@@ -252,7 +252,7 @@ public class Alw3dRenderer implements Renderer{
 						.getType(), attributeInfo.normalized,
 						0, attributeInfo.dataOffset); // This call used to be in a JNI workaround
 				
-				//Log.w(Alw3d.LOG_TAG, "Binding dataOffset: " + attributeInfo.dataOffset);
+				//Log.d(Alw3d.LOG_TAG, "Binding dataOffset: " + attributeInfo.dataOffset);
 			}
 		}
 		
@@ -428,7 +428,7 @@ public class Alw3dRenderer implements Renderer{
 			// Draw
 			GLES20.glDrawElements(geometry.getPrimitiveType().getValue(), geometryInfo.count,
 					GLES20.GL_UNSIGNED_SHORT, geometryInfo.indexOffset);
-			//Log.w(Alw3d.LOG_TAG, "Rendering with indexOffset: " + geometryInfo.indexOffset + "  and count: " + geometryInfo.count);
+			//Log.d(Alw3d.LOG_TAG, "Rendering with indexOffset: " + geometryInfo.indexOffset + "  and count: " + geometryInfo.count);
 	
 			oldGeometry = geometry;
 			oldGeometryInfo = geometryInfo;

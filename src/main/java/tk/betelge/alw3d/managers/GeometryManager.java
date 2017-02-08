@@ -271,6 +271,9 @@ public class GeometryManager {
 
 		synchronized(geometry) {
 			geometryInfo.count = geometry.getIndexCount();
+
+			if(geometryInfo.count == 0) // Buffers might not be initialized yet
+				return;
 			
 			GLES20.glBindBuffer(
 					GLES20.GL_ELEMENT_ARRAY_BUFFER,
@@ -358,7 +361,7 @@ public class GeometryManager {
 			}
 			else
 				count = geometry.getIndexCount();
-			Log.w(Alw3d.LOG_TAG, "Count: " + count);
+			Log.d(Alw3d.LOG_TAG, "Count: " + count);
 			
 			GeometryInfo geometryInfo = new GeometryInfo();
 
@@ -376,7 +379,7 @@ public class GeometryManager {
 			GLES20.glBufferSubData(GLES20.GL_ELEMENT_ARRAY_BUFFER,
 					indexOffset, count*2, geometry.getIndices());
 			
-			Log.w(Alw3d.LOG_TAG, "indexOffset: " + indexOffset);
+			Log.d(Alw3d.LOG_TAG, "indexOffset: " + indexOffset);
 
 			// Set and update the index VBO offset
 			geometryInfo.indexOffset = indexOffset;
@@ -385,7 +388,7 @@ public class GeometryManager {
 			else
 				indexOffset += count*2;
 			
-			Log.w(Alw3d.LOG_TAG, "indexOffset changed to  " + indexOffset);
+			Log.d(Alw3d.LOG_TAG, "indexOffset changed to  " + indexOffset);
 
 			geometryInfo.count = count;
 
@@ -426,7 +429,7 @@ public class GeometryManager {
 				attributeInfo.name = geometryAttribute.name;
 				geometryInfo.attributeInfos.add(attributeInfo);
 				
-				Log.w(Alw3d.LOG_TAG, "dataOffset: " + dataOffset);
+				Log.d(Alw3d.LOG_TAG, "dataOffset: " + dataOffset);
 
 
 				// Bind the attribute to the VAO
@@ -466,7 +469,7 @@ public class GeometryManager {
 
 				// Update the data VBO offset
 				dataOffset += geometryAttribute.buffer.limit() * 4;
-				Log.w(Alw3d.LOG_TAG, "dataOffset changed to: " + dataOffset);
+				Log.d(Alw3d.LOG_TAG, "dataOffset changed to: " + dataOffset);
 				
 			}
 

@@ -63,7 +63,7 @@ public class ShaderManager {
 			GLES20.glGetShaderiv(shaderHandle, GLES20.GL_INFO_LOG_LENGTH, length, 0);
 			GLES20.glGetShaderiv(shaderHandle, GLES20.GL_COMPILE_STATUS, status, 0);
 			
-			Log.w(Alw3d.LOG_TAG, "logShad, Length: " + length[0] +" Status: " + status[0] + " " +
+			Log.d(Alw3d.LOG_TAG, "logShad, Length: " + length[0] +" Status: " + status[0] + " " +
 					GLES20.glGetShaderInfoLog(shaderHandle));
 			
 			GLES20.glAttachShader(shaderProgramHandle, shaderHandle);
@@ -72,7 +72,7 @@ public class ShaderManager {
 		
 		GLES20.glLinkProgram(shaderProgramHandle);
 		
-		Log.w(Alw3d.LOG_TAG, "logProg: " + 
+		Log.d(Alw3d.LOG_TAG, "logProg: " +
 				GLES20.glGetProgramInfoLog(shaderProgramHandle));
 		
 		// TODO: validate
@@ -80,7 +80,7 @@ public class ShaderManager {
 		int[] validStatus = new int[1]; 
 		GLES20.glGetProgramiv(shaderProgramHandle,
 			GLES20.GL_VALIDATE_STATUS, validStatus, 0);
-		Log.w(Alw3d.LOG_TAG, ((Integer) validStatus[0]).toString());
+		Log.d(Alw3d.LOG_TAG, ((Integer) validStatus[0]).toString());
 		
 		shaderShaderHandles.put(shaderProgramHandle, shaderHandles);
 				
