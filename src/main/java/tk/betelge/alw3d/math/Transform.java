@@ -72,6 +72,10 @@ public class Transform {
 				.mult(scale)), rotation.mult(transform.rotation), scale
 				.mult(transform.scale));
 	}
+
+	public Vector3f mult(Vector3f vec) {
+		return position.add(rotation.mult(vec).mult(scale));
+	}
 	
 	public void mult(Transform transform, Transform result) {
 		result.set(this);

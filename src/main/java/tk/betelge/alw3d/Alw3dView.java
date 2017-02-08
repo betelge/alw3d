@@ -51,4 +51,9 @@ public class Alw3dView extends GLSurfaceView {
 			OnSurfaceChangedListener onSurfaceChangedListener) {
 		renderer.setOnSurfaceChangedListener(onSurfaceChangedListener);
 	}
+
+	// TODO: Should this be accessible?
+	public Alw3dRenderer getRenderer() {
+		return renderer;
+	}
 }

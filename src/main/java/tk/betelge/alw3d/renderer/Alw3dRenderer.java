@@ -92,35 +92,65 @@ public class Alw3dRenderer implements Renderer{
 		// Allocate perspective matrix
 		perspectiveMatrix = FloatBuffer.allocate(16);
 	}
-	
+
+	public float[] getPerspectiveMatrix() {
+		// TODO: This method is not symetric with setPerspectiveMatrix
+		assert(perspectiveMatrix.hasArray());
+
+		return perspectiveMatrix.array();
+	}
+
 	static public void setPerspectiveMatrix( FloatBuffer m, 
 			float aspect, float fov, float zNear, float zFar ) {
 		// Assumes that perspectveMatrix has size >=16 and the position 0.
-		
-		m.clear();
+
+		assert(m.hasArray());
+
+		float[] a = m.array();
+		//m.clear();
 				
 		float h = 1f / (float) Math.tan(fov * (float) Math.PI / 360f);
-		m.put(h / aspect);
+		a[0] = h / aspect;
+		a[1] = 0;
+		a[2] = 0;
+		a[3] = 0;
+
+		/*m.put(h / aspect);
 		m.put(0f);
 		m.put(0f);
-		m.put(0f);
+		m.put(0f);*/
 		
-		m.put(0f);
+		a[4] = 0;
+		a[5] = h;
+		a[6] = 0;
+		a[7] = 0;
+
+		/*m.put(0f);
 		m.put(h);
 		m.put(0f);
-		m.put(0f);
+		m.put(0f);*/
 	
-		m.put(0f);
+		a[8] = 0;
+		a[9] = 0;
+		a[10] = (zNear + zFar) / (zNear - zFar);
+		a[11] = -1;
+
+		/*m.put(0f);
 		m.put(0f);
 		m.put( (zNear + zFar) / (zNear - zFar) );
-		m.put(-1f);
+		m.put(-1f);*/
 	
-		m.put(0f);
+		a[12] = 0;
+		a[13] = 0;
+		a[14] = 2f * (zNear * zFar) / (zNear - zFar);
+		a[15] = 0;
+
+		/*m.put(0f);
 		m.put(0f);
 		m.put( 2f * (zNear * zFar) / (zNear - zFar));
 		m.put(0f);
 		
-		m.flip();
+		m.flip();*/
 	}
 	
 	public void setState(SetPass.State state, boolean set) {
