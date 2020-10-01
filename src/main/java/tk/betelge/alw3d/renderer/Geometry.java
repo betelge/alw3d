@@ -8,7 +8,8 @@ import android.opengl.GLES20;
 
 public class Geometry {
 	static public Geometry QUAD = new Geometry(null, null);
-		
+	static public Geometry BIG_TRIANGLE = new Geometry(null, null);
+
 	private ShortBuffer indices;
 	private List<Attribute> attributes;
 	public enum PrimitiveType {

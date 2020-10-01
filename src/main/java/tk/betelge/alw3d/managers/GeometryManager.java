@@ -155,7 +155,53 @@ public class GeometryManager {
 		lat.add(at2);
 		Geometry.QUAD.setIndices(indices);
 		Geometry.QUAD.setAttributes(lat);
-		
+
+		// Initialize the BIG_TRIANGLE
+		indices = ShortBuffer.allocate(3);
+		indices.put((short) 0);
+		indices.put((short) 1);
+		indices.put((short) 2);
+		indices.flip();
+
+		at = new Geometry.Attribute();
+		at.name = "position";
+		at.size = 3;
+		at.type = Geometry.Type.FLOAT;
+		at.buffer = FloatBuffer.allocate(3*3);
+		((FloatBuffer) at.buffer).put(-1);
+		((FloatBuffer) at.buffer).put(-1);
+		((FloatBuffer) at.buffer).put(0);
+
+		((FloatBuffer) at.buffer).put(3);
+		((FloatBuffer) at.buffer).put(-1);
+		((FloatBuffer) at.buffer).put(0);
+
+		((FloatBuffer) at.buffer).put(-1);
+		((FloatBuffer) at.buffer).put(3);
+		((FloatBuffer) at.buffer).put(0);
+		at.buffer.flip();
+
+		at2 = new Geometry.Attribute();
+		at2.name = "textureCoord";
+		at2.size = 2;
+		at2.type = Geometry.Type.FLOAT;
+		at2.buffer = FloatBuffer.allocate(2*3);
+		((FloatBuffer) at2.buffer).put(0);
+		((FloatBuffer) at2.buffer).put(0);
+
+		((FloatBuffer) at2.buffer).put(2);
+		((FloatBuffer) at2.buffer).put(0);
+
+		((FloatBuffer) at2.buffer).put(0);
+		((FloatBuffer) at2.buffer).put(2);
+		at2.buffer.flip();
+
+		lat = new ArrayList<Geometry.Attribute>();
+		lat.add(at);
+		lat.add(at2);
+		Geometry.BIG_TRIANGLE.setIndices(indices);
+		Geometry.BIG_TRIANGLE.setAttributes(lat);
+
 		isGeometryManagerInitialized = true;
 	}
 

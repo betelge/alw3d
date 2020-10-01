@@ -12,10 +12,14 @@ public class Alw3dView extends GLSurfaceView {
 	Alw3dRenderer renderer;
 
 	public Alw3dView(Context context, Alw3dModel model) {
+		this(context, model, 2);
+	}
+
+	public Alw3dView(Context context, Alw3dModel model, int glContextClientVersion) {
 		super(context);
 		this.model = model;
 		
-        this.setEGLContextClientVersion(2);
+        this.setEGLContextClientVersion(glContextClientVersion);
 		renderer = new Alw3dRenderer(model);
 		setRenderer(renderer);
 	}

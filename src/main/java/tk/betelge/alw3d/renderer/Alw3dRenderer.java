@@ -80,6 +80,8 @@ public class Alw3dRenderer implements Renderer{
 
 	long time = 0;
 
+	private boolean hasFloatBuffers;
+
 	public Alw3dRenderer(Alw3dModel model) {
 		this.model = model;
 		
@@ -179,10 +181,10 @@ public class Alw3dRenderer implements Renderer{
 	}
 
 	public void renderQuad(Material material) {
-		renderQuad(material, null);
+		renderQuad(material, null, false);
 	}
 
-	public void renderQuad(Material material, FBO fbo) {
+	public void renderQuad(Material material, FBO fbo, boolean useBigTriangle) {
 
 		// Bind FBO
 		bindFBO(fbo);
@@ -194,8 +196,8 @@ public class Alw3dRenderer implements Renderer{
 		GLES20.glDisable(GLES20.GL_BLEND);
 
 		// Bind quad geometry info
-		GeometryInfo geometryInfo =geometryManager
-			.getGeometryInfo(Geometry.QUAD);
+		Geometry geometry = useBigTriangle ? Geometry.BIG_TRIANGLE : Geometry.QUAD;
+		GeometryInfo geometryInfo = geometryManager.getGeometryInfo(geometry);
 		bindGeometryInfo(geometryInfo);
 
 		// Set shader
@@ -648,6 +650,9 @@ public class Alw3dRenderer implements Renderer{
 		textureManager = new TextureManager();
 		renderBufferManager = new RenderBufferManager();
 		fboManager = new FBOManager(textureManager, renderBufferManager);
+
+		String extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS);
+		hasFloatBuffers = extensions.contains("GL_EXT_color_buffer_float");
 		
 		// Enable back-faces culling
 		GLES20.glEnable(GLES20.GL_CULL_FACE);
@@ -695,9 +700,9 @@ public class Alw3dRenderer implements Renderer{
 					}
 				}
 				else if(renderPass instanceof QuadRenderPass) {
-					renderQuad(
-							((QuadRenderPass) renderPass).getMaterial(),
-							renderPass.getFbo());
+					QuadRenderPass quadRenderPass = (QuadRenderPass) renderPass;
+					renderQuad(quadRenderPass.getMaterial(), quadRenderPass.getFbo(),
+							quadRenderPass.isUseBigTriangle());
 				}
 				else if(renderPass instanceof RenderMultiPass) {
 					processRenderPasses(((RenderMultiPass) renderPass).getRenderPasses());
@@ -783,5 +788,9 @@ public class Alw3dRenderer implements Renderer{
 	public void setOnSurfaceChangedListener(
 			OnSurfaceChangedListener onSurfaceChangedListener) {
 		this.onSurfaceChangedListener = onSurfaceChangedListener;
+	}
+
+	public boolean hasFloatBuffers() {
+		return hasFloatBuffers;
 	}
 }

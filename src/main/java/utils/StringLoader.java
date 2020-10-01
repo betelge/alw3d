@@ -35,7 +35,7 @@ public class StringLoader {
 		String line = null;
 
 		while ((line = reader.readLine()) != null) {
-			builder.append(line + "\n");
+			builder.append(line).append("\n");
 		}
 		reader.close();
 

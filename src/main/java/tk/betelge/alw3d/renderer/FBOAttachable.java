@@ -1,6 +1,7 @@
 package tk.betelge.alw3d.renderer;
 
 import android.opengl.GLES20;
+import android.opengl.GLES31;
 
 public class FBOAttachable {
 	private final int width;
@@ -14,7 +15,10 @@ public class FBOAttachable {
 		GL_RGB565(GLES20.GL_RGB, GLES20.GL_RGB565, 2),
 		GL_RGBA4(GLES20.GL_RGBA, GLES20.GL_RGBA4, 2),
 		GL_RGB5_A1(GLES20.GL_RGBA,GLES20.GL_RGB5_A1, 2),
-				
+
+		GL_RG32F(GLES31.GL_RG, GLES31.GL_RG32F, 4),
+		GL_RGBA32F(GLES31.GL_RGBA, GLES31.GL_RGBA32F, 8),
+
 		GL_DEPTH_COMPONENT(0, GLES20.GL_DEPTH_COMPONENT, 2),
 		GL_STENCIL_INDEX(0, GLES20.GL_STENCIL_INDEX, 1),
 				
