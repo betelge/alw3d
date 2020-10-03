@@ -11,6 +11,7 @@ import tk.betelge.alw3d.renderer.RenderBuffer;
 import tk.betelge.alw3d.renderer.Texture;
 
 import android.opengl.GLES20;
+import android.opengl.GLES30;
 
 public class FBOManager {
 
@@ -35,6 +36,13 @@ public class FBOManager {
 			return 0;
 	}
 
+	private static final int[] attachables_points = {
+			GLES20.GL_COLOR_ATTACHMENT0,
+			GLES30.GL_COLOR_ATTACHMENT1,
+			GLES30.GL_COLOR_ATTACHMENT2,
+			GLES30.GL_COLOR_ATTACHMENT3
+	};
+
 	private boolean tryToUpload(FBO fbo) {
 		if (FBOHandles.containsKey(fbo))
 			return true;
@@ -48,8 +56,7 @@ public class FBOManager {
 
 		// TODO: Check if sizes match
 		for (int i = 0; i < fbo.getAttachables().length && i <= 15; i++) {
-			attach(GLES20.GL_COLOR_ATTACHMENT0 + i, fbo
-					.getAttachables()[i]);
+			attach(attachables_points[i], fbo.getAttachables()[i]);
 		}
 		if (fbo.getDepthBuffer() != null)
 			attach(GLES20.GL_DEPTH_ATTACHMENT, fbo

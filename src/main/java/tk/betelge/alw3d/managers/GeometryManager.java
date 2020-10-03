@@ -156,6 +156,7 @@ public class GeometryManager {
 		Geometry.QUAD.setIndices(indices);
 		Geometry.QUAD.setAttributes(lat);
 
+		// TODO: Does BIG_TRIANGLE not work?
 		// Initialize the BIG_TRIANGLE
 		indices = ShortBuffer.allocate(3);
 		indices.put((short) 0);

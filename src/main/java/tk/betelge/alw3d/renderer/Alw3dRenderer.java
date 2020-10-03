@@ -35,7 +35,9 @@ import tk.betelge.alw3d.renderer.passes.RenderPass.OnRenderPassFinishedListener;
 
 
 import android.opengl.GLES20;
+import android.opengl.GLES30;
 import android.opengl.GLSurfaceView.Renderer;
+import android.os.Build;
 import android.util.Log;
 
 public class Alw3dRenderer implements Renderer{
@@ -176,15 +178,23 @@ public class Alw3dRenderer implements Renderer{
 		// Bind FBO
 		bindFBO(fbo);
 
+		// TODO: Is this even needed here? Check if GLES20 availabale.
+		//if (hasFloatBuffers && fbo != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+		//	GLES30.glDrawBuffers(fbo.getAttachables().length, drawAttachables, 0);
+		//}
+
 		// Clear color and depth buffers
 		GLES20.glClear(bufferBits);
 	}
 
-	public void renderQuad(Material material) {
-		renderQuad(material, null, false);
-	}
+	private static int[] drawAttachables = {
+			GLES20.GL_COLOR_ATTACHMENT0,
+			GLES30.GL_COLOR_ATTACHMENT1,
+			GLES30.GL_COLOR_ATTACHMENT2,
+			GLES30.GL_COLOR_ATTACHMENT3
+	};
 
-	public void renderQuad(Material material, FBO fbo, boolean useBigTriangle) {
+	public void renderQuad(Material material, FBO fbo, boolean useBigTriangle, int numBuffers) {
 
 		// Bind FBO
 		bindFBO(fbo);
@@ -212,7 +222,11 @@ public class Alw3dRenderer implements Renderer{
 		Uniform[] uniforms = material.getUniforms();
 		uploadUniforms(shaderProgram, uniforms);
 
-		// Bind vertex attributes to uniform names
+		if(numBuffers > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+			GLES30.glDrawBuffers(numBuffers, drawAttachables, 0);
+		}
+
+			// Bind vertex attributes to uniform names
 		bindAttributes(geometryInfo.attributeInfos, shaderProgram);
 		// Draw
 		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geometryInfo.count,
@@ -686,7 +700,7 @@ public class Alw3dRenderer implements Renderer{
 					setState(((SetPass) renderPass).getState(),
 							((SetPass) renderPass).isSet());
 				}
-				else if(renderPass instanceof ClearPass) {
+				else if(renderPass instanceof ClearPass) { // TODO: Allow to clear multiple attachables
 					clear(((ClearPass) renderPass).getBufferBits(),
 							renderPass.getFbo());
 				}
@@ -702,7 +716,7 @@ public class Alw3dRenderer implements Renderer{
 				else if(renderPass instanceof QuadRenderPass) {
 					QuadRenderPass quadRenderPass = (QuadRenderPass) renderPass;
 					renderQuad(quadRenderPass.getMaterial(), quadRenderPass.getFbo(),
-							quadRenderPass.isUseBigTriangle());
+							quadRenderPass.isUseBigTriangle(), quadRenderPass.getNumBuffers());
 				}
 				else if(renderPass instanceof RenderMultiPass) {
 					processRenderPasses(((RenderMultiPass) renderPass).getRenderPasses());
