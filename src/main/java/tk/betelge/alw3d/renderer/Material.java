@@ -9,7 +9,8 @@ public class Material {
 
 	private ShaderProgram shaderProgram;
 	private Uniform[] uniforms;
-	
+	private boolean blending;
+
 	private Map<String, Texture> textures = new HashMap<String, Texture>();
 
 	public Material(ShaderProgram shaderProgram) {
@@ -57,5 +58,13 @@ public class Material {
 		}
 		
 		uniforms[uniforms.length - 1] = uniform;
+	}
+
+	public boolean isBlending() {
+		return blending;
+	}
+
+	public void setBlending(boolean blending) {
+		this.blending = blending;
 	}
 }

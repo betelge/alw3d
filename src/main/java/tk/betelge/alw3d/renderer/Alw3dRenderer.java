@@ -202,8 +202,14 @@ public class Alw3dRenderer implements Renderer{
 		// Disable depth test
 		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		
-		// Disable alpha
-		GLES20.glDisable(GLES20.GL_BLEND);
+		// Set alpha blending
+		if(material.isBlending()) {
+			GLES20.glEnable(GLES20.GL_BLEND);
+			GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		}
+		else {
+			GLES20.glDisable(GLES20.GL_BLEND);
+		}
 
 		// Bind quad geometry info
 		Geometry geometry = useBigTriangle ? Geometry.BIG_TRIANGLE : Geometry.QUAD;
