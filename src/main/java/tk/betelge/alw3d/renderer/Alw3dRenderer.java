@@ -52,7 +52,7 @@ public class Alw3dRenderer implements Renderer{
 	OnSurfaceChangedListener onSurfaceChangedListener;
 	
 	public interface OnSurfaceChangedListener {
-		public void onSurfaceChanged(int w, int h);
+		void onSurfaceChanged(int w, int h);
 	}
 	
 	// Set with resources that are requested to be preloaded
